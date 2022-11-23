@@ -1,6 +1,7 @@
 const fs = require('fs');
 const http = require('http');
 const url = require('url');
+const replaceTemplate = require("./modules/replaceTemplate");
 
 const PORT = 8000;
 
@@ -11,27 +12,6 @@ const PATH_NAMES = {
   api: '/api',
 }
 
-const replaceTemplate = (template, item) => {
-  let output = template.replace(/{%PRODUCTNAME%}/g, item.productName);
-  output = output.replace(/{%ID%}/g, item.id);
-  output = output.replace(/{%FROM%}/g, item.from);
-  output = output.replace(/{%NUTRIENTS%}/g, item.nutrients);
-  output = output.replace(/{%QUANTITY%}/g, item.quantity);
-  output = output.replace(/{%PRICE%}/g, item.price);
-  output = output.replace(/{%FROM%}/g, item.from);
-  output = output.replace(/{%DESCRIPTION%}/g, item.description);
-  output = output.replace(/{%IMAGE%}/g, item.image);
-  output = output.replace(
-    /{%ORGANIC%}/g,
-    item.organic ? "Organic" : "not-organic"
-  );
-  
-  if (!item.organic) {
-    output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
-  }
-  return output;
-};
-
 const tempOverview = fs.readFileSync(`${__dirname}/starter/templates/template-overview.html`,'utf-8');
 const tempCard = fs.readFileSync(`${__dirname}/starter/templates/template-card.html`,'utf-8');
 const tempProduct = fs.readFileSync(
@@ -41,41 +21,50 @@ const tempProduct = fs.readFileSync(
 const dataJSON = fs.readFileSync(`${__dirname}/starter/dev-data/data.json`,'utf-8');
 const parsedJSON = JSON.parse(dataJSON);
 
-const getRespByPathName = (pathName, res) => {
+const getRespByPathName = (pathName, query, res) => {
   switch (pathName) {
-    case PATH_NAMES.overview:
-      res.end(`This is the ${PATH_NAMES.overview} page`);
-      return;
     case PATH_NAMES.product:
-      res.end(`This is the ${PATH_NAMES.product} page`);
+      const product = parsedJSON[query.id];
+      const outputTemplate = replaceTemplate(tempProduct, product);
+
+      res.writeHead(200, { "Content-Type": "text/html" });
+
+      res.end(outputTemplate);
       return;
     case PATH_NAMES.api:
-      res.writeHead(200,{
-        'Content-Type': 'application/json'
+      res.writeHead(200, {
+        "Content-Type": "application/json",
       });
       res.end(dataJSON);
       return;
     case PATH_NAMES.root:
-      res.writeHead(200,{
-        'Content-Type': 'text/html'
-      })
-      const cardsHTML = parsedJSON.map(el => replaceTemplate(tempCard, el)).join();
+    case PATH_NAMES.overview:
+      res.writeHead(200, {
+        "Content-Type": "text/html",
+      });
+      const cardsHTML = parsedJSON
+        .map((el) => replaceTemplate(tempCard, el))
+        .join();
 
-      const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHTML)
-      
+      const output = tempOverview.replace("{%PRODUCT_CARDS%}", cardsHTML);
+
       return res.end(output);
 
     default:
       res.writeHead(404, {
-        'Content-Type': 'text/html',
-        'my-test-header': 'hello'
+        "Content-Type": "text/html",
+        "my-test-header": "hello",
       });
       res.end("<h1>Page not found</h1>");
       return;
   }
 };
 // SERVER 💻💻💻💻💻💻💻💻💻💻💻💻💻💻💻💻💻
-const server = http.createServer((req, res) => getRespByPathName(req.url, res));
+const server = http.createServer((req, res) => {
+  const {query, pathname} = url.parse(req.url, true);
+  
+  getRespByPathName(pathname, query, res);
+});
 
 server.listen(PORT, () => {
   console.log(`SERVER runs on port ${PORT}\n`);
