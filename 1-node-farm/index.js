@@ -1,9 +1,11 @@
-const fs = require('fs');
-const http = require('http');
-const url = require('url');
-const replaceTemplate = require("./modules/replaceTemplate");
+const fs = require('fs')
+const http = require('http')
+const url = require('url')
+const slugify = require('slugify')
 
-const PORT = 8000;
+const replaceTemplate = require('./modules/replaceTemplate')
+
+const PORT = 8000
 
 const PATH_NAMES = {
   root: '/',
@@ -12,64 +14,81 @@ const PATH_NAMES = {
   api: '/api',
 }
 
-const tempOverview = fs.readFileSync(`${__dirname}/starter/templates/template-overview.html`,'utf-8');
-const tempCard = fs.readFileSync(`${__dirname}/starter/templates/template-card.html`,'utf-8');
+const tempOverview = fs.readFileSync(
+  `${__dirname}/starter/templates/template-overview.html`,
+  'utf-8'
+)
+const tempCard = fs.readFileSync(
+  `${__dirname}/starter/templates/template-card.html`,
+  'utf-8'
+)
 const tempProduct = fs.readFileSync(
   `${__dirname}/starter/templates/template_product.html`,
-  "utf-8"
-);
-const dataJSON = fs.readFileSync(`${__dirname}/starter/dev-data/data.json`,'utf-8');
-const parsedJSON = JSON.parse(dataJSON);
+  'utf-8'
+)
+const dataJSON = fs.readFileSync(
+  `${__dirname}/starter/dev-data/data.json`,
+  'utf-8'
+)
+const parsedJSON = JSON.parse(dataJSON)
+
+const slugs = parsedJSON.map((el) =>
+  slugify(el.productName, {
+    lower: true,
+  })
+)
+console.log('❗ > slugs', slugs)
 
 const getRespByPathName = (pathName, query, res) => {
   switch (pathName) {
     case PATH_NAMES.product:
-      const product = parsedJSON[query.id];
-      const outputTemplate = replaceTemplate(tempProduct, product);
+      const product = parsedJSON[query.id]
+      const outputTemplate = replaceTemplate(tempProduct, product)
 
-      res.writeHead(200, { "Content-Type": "text/html" });
+      res.writeHead(200, {
+        'Content-Type': 'text/html',
+      })
 
-      res.end(outputTemplate);
-      return;
+      res.end(outputTemplate)
+      return
     case PATH_NAMES.api:
       res.writeHead(200, {
-        "Content-Type": "application/json",
-      });
-      res.end(dataJSON);
-      return;
+        'Content-Type': 'application/json',
+      })
+      res.end(dataJSON)
+      return
     case PATH_NAMES.root:
     case PATH_NAMES.overview:
       res.writeHead(200, {
-        "Content-Type": "text/html",
-      });
+        'Content-Type': 'text/html',
+      })
       const cardsHTML = parsedJSON
         .map((el) => replaceTemplate(tempCard, el))
-        .join();
+        .join()
 
-      const output = tempOverview.replace("{%PRODUCT_CARDS%}", cardsHTML);
+      const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHTML)
 
-      return res.end(output);
+      return res.end(output)
 
     default:
       res.writeHead(404, {
-        "Content-Type": "text/html",
-        "my-test-header": "hello",
-      });
-      res.end("<h1>Page not found</h1>");
-      return;
+        'Content-Type': 'text/html',
+        'my-test-header': 'hello',
+      })
+      res.end('<h1>Page not found</h1>')
+      return
   }
-};
+}
 // SERVER 💻💻💻💻💻💻💻💻💻💻💻💻💻💻💻💻💻
 const server = http.createServer((req, res) => {
-  const {query, pathname} = url.parse(req.url, true);
-  
-  getRespByPathName(pathname, query, res);
-});
+  const { query, pathname } = url.parse(req.url, true)
+
+  getRespByPathName(pathname, query, res)
+})
 
 server.listen(PORT, () => {
-  console.log(`SERVER runs on port ${PORT}\n`);
-});
-
+  console.log(`SERVER runs on port ${PORT}\n`)
+})
 
 // FILES 🗂️🗂️🗂️🗂️🗂️🗂️🗂️🗂️🗂️🗂️🗂️🗂️🗂️🗂️🗂️🗂️🗂️🗂️
 // // NON-BLOCKING CODE, ASYNCHRONOUS
@@ -83,7 +102,7 @@ server.listen(PORT, () => {
 //             console.log("3 👍🏻❗ > data", data3);
 //             fs.writeFile(`./starter/txt/final.txt`, `DATA 2: ${data2}\n\nDATA 3: ${data3}`, "utf-8", (err) => {
 //               if (err) {
-//                 console.log('❗🥵 👎🏻 > err', err); 
+//                 console.log('❗🥵 👎🏻 > err', err);
 //               }
 //             });
 //           }
