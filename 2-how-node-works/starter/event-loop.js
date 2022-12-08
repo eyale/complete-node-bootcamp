@@ -1,4 +1,4 @@
-const fs = require("fs");
+`const fs = require("fs");
 const crypto = require("crypto");
 
 const startDate = Date.now();
@@ -37,3 +37,4 @@ fs.readFile("./test-file.txt", "utf8", (err, data) => {
 });
 
 console.log("1 - Hi from the top level code...");
+`;
