@@ -17,6 +17,39 @@ const Routes = {
     tourById: `/api/${K.versions.v1}/tours/:id`,
   },
 };
+
+app.patch(Routes.v1.tourById, (req, res) => {
+  const id = parseInt(req.params.id);
+  const tourItem = toursJSONData.find((tour) => tour.id === id);
+
+  if (!tourItem) {
+    return res.status(404).json({
+      status: K.status.fail,
+      message: `Invalid id: ${id}`,
+    });
+  }
+  res.status(200).json({
+    tour: tourItem,
+  });
+});
+
+app.delete(Routes.v1.tourById, (req, res) => {
+  const id = parseInt(req.params.id);
+  const tourItem = toursJSONData.find((tour) => tour.id === id);
+
+  if (!tourItem) {
+    return res.status(404).json({
+      status: K.status.fail,
+      message: `Invalid id: ${id}`,
+    });
+  }
+
+  res.status(204).json({
+    status: K.status.success,
+    data: null,
+  });
+});
+
 app.post(Routes.v1.tours, (req, res) => {
   const newTourItemId = toursJSONData[toursJSONData.length - 1].id + 1;
   const newTourItem = Object.assign({ id: newTourItemId }, req.body);
