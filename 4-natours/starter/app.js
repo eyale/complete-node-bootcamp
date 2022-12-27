@@ -56,11 +56,9 @@ const onAddNewItem = (req, res) => {
   const newItemId = toursData[toursData.length - 1].id + 1;
   const newItem = Object.assign({ id: newItemId }, req.body);
 
-
   toursData.push(newItem);
   const jsonString = JSON.stringify(toursData);
   fs.writeFile(tourFilePath, jsonString, (err) => {
-
     res.status(201).json({
       status: K.status.success,
       data: {
@@ -102,10 +100,11 @@ const onDeleteItem = (req, res) => {
   });
 };
 
-app.get(Routes.v1.tours, onGetAllItems);
-app.get(Routes.v1.tourById, onGetItemById);
-app.post(Routes.v1.tours, onAddNewItem);
-app.patch(Routes.v1.tourById, onEditItem);
-app.delete(Routes.v1.tourById, onDeleteItem);
+app.route(Routes.v1.tours).get(onGetAllItems).post(onAddNewItem);
+app
+  .route(Routes.v1.tourById)
+  .get(onGetItemById)
+  .patch(onEditItem)
+  .delete(onDeleteItem);
 
 app.listen(K.PORT, onAppStart);
