@@ -1,4 +1,5 @@
 const fs = require('fs');
+
 const K = require(`${__dirname}/../misc/constants.js`);
 
 const onGetAll = (req, res) => {
@@ -7,20 +8,20 @@ const onGetAll = (req, res) => {
     requestedAt: req.requestedAt,
     count: K.toursData.length,
     data: {
-      tours: K.toursData,
-    },
+      tours: K.toursData
+    }
   });
 };
 
 const onGet = (req, res) => {
-  const id = parseInt(req.params.id);
-  const tour = K.toursData.find((tour) => tour.id === id);
+  const id = parseInt(req.params.id, 10);
+  const tour = K.toursData.find(item => item.id === id);
 
   res.status(200).json({
     status: K.STATUS.success,
     data: {
-      tour,
-    },
+      tour
+    }
   });
 };
 
@@ -30,29 +31,29 @@ const onAddNew = (req, res) => {
 
   K.toursData.push(newItem);
   const jsonString = JSON.stringify(K.toursData);
-  fs.writeFile(K.tourFilePath, jsonString, (err) => {
+  fs.writeFile(K.tourFilePath, jsonString, _ => {
     res.status(201).json({
       status: K.STATUS.success,
       data: {
-        tour: newItem,
-      },
+        tour: newItem
+      }
     });
   });
 };
 
 const onEdit = (req, res) => {
-  const id = parseInt(req.params.id);
-  const tour = K.toursData.find((tour) => tour.id === id);
+  const id = parseInt(req.params.id, 10);
+  const tour = K.toursData.find(item => item.id === id);
 
   res.status(200).json({
-    tour: tour,
+    tour: tour
   });
 };
 
 const onDelete = (req, res) => {
   res.status(204).json({
     status: K.STATUS.success,
-    data: null,
+    data: null
   });
 };
 
@@ -61,5 +62,5 @@ module.exports = {
   onGet,
   onAddNew,
   onEdit,
-  onDelete,
+  onDelete
 };

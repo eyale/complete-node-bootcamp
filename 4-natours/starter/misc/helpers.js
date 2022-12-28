@@ -1,11 +1,11 @@
 const express = require('express');
 const morgan = require('morgan');
-const path = require('path');
 
 const K = require(`${__dirname}/constants.js`);
 
 const onAppStart = () => {
-  console.log(`${K.APP_NAME} is 🏃🏼‍♂️ at ${K.PORT}...`);
+  // eslint-disable-next-line no-console
+  console.log(`${K.APP_NAME} is 🏃🏼‍♂️ at ${process.env.PORT}...`);
 };
 
 const addRequestedAtToParams = (req, res, next) => {
@@ -19,7 +19,7 @@ const checkBody = (req, res, next) => {
   if (!name || !price) {
     return res.status(404).json({
       status: K.STATUS.fail,
-      message: 'Invalid name or price parameter',
+      message: 'Invalid name or price parameter'
     });
   }
 
@@ -27,20 +27,22 @@ const checkBody = (req, res, next) => {
 };
 
 const checkId = (req, res, next, val) => {
-  const id = parseInt(val);
-  const tourItem = K.toursData.find((tour) => tour.id === id);
+  const id = parseInt(val, 10);
+  const tourItem = K.toursData.find(tour => tour.id === id);
 
   if (!tourItem) {
     return res.status(404).json({
       status: K.STATUS.fail,
-      message: `Invalid id: ${id}`,
+      message: `Invalid id: ${id}`
     });
   }
   next();
 };
 
-const applyMiddlewares = (app) => {
-  app.use(morgan('dev'));
+const applyMiddlewares = app => {
+  if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+  }
   app.use(express.json());
   app.use(express.static(`${__dirname}/../public`));
   app.use(addRequestedAtToParams);
