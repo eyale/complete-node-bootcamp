@@ -8,7 +8,6 @@ const app = express();
 
 // middleware
 helpers.applyMiddlewares(app);
-
 /**
  * TOURS
  */

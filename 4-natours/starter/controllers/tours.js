@@ -4,7 +4,7 @@ const K = require(`${__dirname}/../misc/constants.js`);
 const onGetAll = (req, res) => {
   res.status(200).json({
     status: K.STATUS.success,
-    requestedAt: req.requestTime,
+    requestedAt: req.requestedAt,
     count: K.toursData.length,
     data: {
       tours: K.toursData,
@@ -14,20 +14,12 @@ const onGetAll = (req, res) => {
 
 const onGet = (req, res) => {
   const id = parseInt(req.params.id);
-  const tourItem = K.toursData.find((tour) => tour.id === id);
-
-  // if (id > K.toursData.length) {
-  if (!tourItem) {
-    return res.status(404).json({
-      status: K.STATUS.fail,
-      message: `Invalid id: ${id}`,
-    });
-  }
+  const tour = K.toursData.find((tour) => tour.id === id);
 
   res.status(200).json({
     status: K.STATUS.success,
     data: {
-      tour: K.toursData.find((tour) => tour.id === id),
+      tour,
     },
   });
 };
@@ -49,31 +41,15 @@ const onAddNew = (req, res) => {
 };
 
 const onEdit = (req, res) => {
-  const id = parsTour(req.params.id);
-  const tourItem = K.toursData.find((tour) => tour.id === id);
+  const id = parseInt(req.params.id);
+  const tour = K.toursData.find((tour) => tour.id === id);
 
-  if (!tourItem) {
-    return res.status(404).json({
-      status: K.STATUS.fail,
-      message: `Invalid id: ${id}`,
-    });
-  }
   res.status(200).json({
-    tour: tourItem,
+    tour: tour,
   });
 };
 
 const onDelete = (req, res) => {
-  const id = parseInt(req.params.id);
-  const tourItem = K.toursData.find((tour) => tour.id === id);
-
-  if (!tourItem) {
-    return res.status(404).json({
-      status: K.STATUS.fail,
-      message: `Invalid id: ${id}`,
-    });
-  }
-
   res.status(204).json({
     status: K.STATUS.success,
     data: null,

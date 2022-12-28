@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 
 const API_VERSION = {
   v1: 'v1',
@@ -8,6 +7,14 @@ const API_VERSION = {
 const STATUS = {
   success: 'success',
   fail: 'fail',
+};
+
+const API_METHOD = {
+  GET: 'GET',
+  POST: 'POST',
+  PATCH: 'PATCH',
+  PUT: 'PUT',
+  DELETE: 'DELETE',
 };
 
 const ROUTES = {
@@ -28,4 +35,5 @@ module.exports = {
   ROUTES,
   tourFilePath,
   toursData,
+  API_METHOD,
 };

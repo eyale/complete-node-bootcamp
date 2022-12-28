@@ -1,10 +1,15 @@
 const express = require('express');
+const H = require(`${__dirname}/../misc/helpers.js`);
 
 const controller = require(`${__dirname}/../controllers/users.js`);
 
 const router = express.Router();
+router.use('id', H.checkId);
 
-router.route('/').get(controller.onGetAll).post(controller.onAddNew);
+router
+  .route('/')
+  .get(controller.onGetAll)
+  .post(H.checkBody, controller.onAddNew);
 
 router
   .route('/:id')
