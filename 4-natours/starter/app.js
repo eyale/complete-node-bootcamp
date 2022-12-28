@@ -1,38 +1,21 @@
-const fs = require('fs');
 const express = require('express');
 
 const K = require(`${__dirname}/misc/constants`);
 const helpers = require(`${__dirname}/misc/helpers`);
-const routeHandlers = require(`${__dirname}/misc/routeHandlers`);
+const toursRouter = require(`${__dirname}/routes/tours`);
+const usersRouter = require(`${__dirname}/routes/users`);
 const app = express();
 
 // middleware
 helpers.applyMiddlewares(app);
 
-const onAppStart = () => {
-  console.log(`${K.APP_NAME} is 🏃🏼‍♂️ at ${K.PORT}...`);
-};
-
 /**
  * TOURS
  */
-app
-  .route(K.ROUTES.v1.tours)
-  .get(routeHandlers.onGetAllTours)
-  .post(routeHandlers.onAddNewTour);
-
-app
-  .route(K.ROUTES.v1.tourById)
-  .get(routeHandlers.onGetTourById)
-  .patch(routeHandlers.onEditTour)
-  .delete(routeHandlers.onDeleteTour);
-
+app.use(K.ROUTES.v1.tours, toursRouter);
 /**
  * USERS
  */
-// app.route(K.ROUTES.v1.users).get();
+app.use(K.ROUTES.v1.users, usersRouter);
 
-/**
- * START APP
- */
-app.listen(K.PORT, onAppStart);
+module.exports = app;

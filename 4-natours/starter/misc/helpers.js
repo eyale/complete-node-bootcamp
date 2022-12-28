@@ -1,5 +1,10 @@
 const express = require('express');
 const morgan = require('morgan');
+const K = require(`${__dirname}/constants.js`);
+
+const onAppStart = () => {
+  console.log(`${K.APP_NAME} is 🏃🏼‍♂️ at ${K.PORT}...`);
+};
 
 const applyMiddlewares = (app) => {
   app.use(morgan('dev'));
@@ -11,4 +16,4 @@ const applyMiddlewares = (app) => {
   });
 };
 
-module.exports = { applyMiddlewares };
+module.exports = { onAppStart, applyMiddlewares };

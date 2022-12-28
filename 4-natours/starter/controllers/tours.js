@@ -1,8 +1,7 @@
 const fs = require('fs');
+const K = require(`${__dirname}/../misc/constants.js`);
 
-const K = require(`${__dirname}/constants`);
-
-const onGetAllTours = (req, res) => {
+const onGetAll = (req, res) => {
   res.status(200).json({
     status: K.STATUS.success,
     requestedAt: req.requestTime,
@@ -13,7 +12,7 @@ const onGetAllTours = (req, res) => {
   });
 };
 
-const onGetTourById = (req, res) => {
+const onGet = (req, res) => {
   const id = parseInt(req.params.id);
   const tourItem = K.toursData.find((tour) => tour.id === id);
 
@@ -33,7 +32,7 @@ const onGetTourById = (req, res) => {
   });
 };
 
-const onAddNewTour = (req, res) => {
+const onAddNew = (req, res) => {
   const newItemId = K.toursData[K.toursData.length - 1].id + 1;
   const newItem = Object.assign({ id: newItemId }, req.body);
 
@@ -49,7 +48,7 @@ const onAddNewTour = (req, res) => {
   });
 };
 
-const onEditTour = (req, res) => {
+const onEdit = (req, res) => {
   const id = parsTour(req.params.id);
   const tourItem = K.toursData.find((tour) => tour.id === id);
 
@@ -64,7 +63,7 @@ const onEditTour = (req, res) => {
   });
 };
 
-const onDeleteTour = (req, res) => {
+const onDelete = (req, res) => {
   const id = parseInt(req.params.id);
   const tourItem = K.toursData.find((tour) => tour.id === id);
 
@@ -82,9 +81,9 @@ const onDeleteTour = (req, res) => {
 };
 
 module.exports = {
-  onGetAllTours,
-  onGetTourById,
-  onAddNewTour,
-  onEditTour,
-  onDeleteTour,
+  onGetAll,
+  onGet,
+  onAddNew,
+  onEdit,
+  onDelete,
 };
