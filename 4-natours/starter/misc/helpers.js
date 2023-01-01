@@ -1,11 +1,15 @@
+/* eslint-disable no-console */
 const express = require('express');
 const morgan = require('morgan');
 
 const K = require(`${__dirname}/constants.js`);
 
 const onAppStart = () => {
-  // eslint-disable-next-line no-console
-  console.log(`${K.APP_NAME} is 🏃🏼‍♂️ at ${process.env.PORT}...`);
+  console.log(`📲 ${K.APP_NAME} is running at ${process.env.PORT} PORT`);
+};
+
+const onMongooseConnect = _ => {
+  console.log('🔌 MANGOOSE CONNECTED');
 };
 
 const addRequestedAtToParams = (req, res, next) => {
@@ -48,4 +52,10 @@ const applyMiddlewares = app => {
   app.use(addRequestedAtToParams);
 };
 
-module.exports = { onAppStart, applyMiddlewares, checkId, checkBody };
+module.exports = {
+  onAppStart,
+  onMongooseConnect,
+  applyMiddlewares,
+  checkId,
+  checkBody
+};
