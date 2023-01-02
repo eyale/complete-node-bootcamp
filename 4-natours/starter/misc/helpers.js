@@ -9,7 +9,7 @@ const onAppStart = () => {
 };
 
 const onMongooseConnect = _ => {
-  console.log('🔌 MANGOOSE CONNECTED');
+  console.log('🔌 MONGOOSE CONNECTED');
 };
 
 const addRequestedAtToParams = (req, res, next) => {
@@ -30,18 +30,18 @@ const checkBody = (req, res, next) => {
   next();
 };
 
-const checkId = (req, res, next, val) => {
-  const id = parseInt(val, 10);
-  const tourItem = K.toursData.find(tour => tour.id === id);
+// const checkId = (req, res, next, val) => {
+//   const id = parseInt(val, 10);
+//   const tourItem = K.toursData.find(tour => tour.id === id);
 
-  if (!tourItem) {
-    return res.status(404).json({
-      status: K.STATUS.fail,
-      message: `Invalid id: ${id}`
-    });
-  }
-  next();
-};
+//   if (!tourItem) {
+//     return res.status(404).json({
+//       status: K.STATUS.fail,
+//       message: `Invalid id: ${id}`
+//     });
+//   }
+//   next();
+// };
 
 const applyMiddlewares = app => {
   if (process.env.NODE_ENV === 'development') {
@@ -56,6 +56,5 @@ module.exports = {
   onAppStart,
   onMongooseConnect,
   applyMiddlewares,
-  checkId,
   checkBody
 };

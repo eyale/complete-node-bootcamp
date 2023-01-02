@@ -27,36 +27,4 @@ mongoose
   .catch(console.log)
   .then(helpers.onMongooseConnect);
 
-const tourSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'A tour must have a name'],
-    unique: true
-  },
-  rating: {
-    type: Number,
-    default: 4.5
-  },
-  price: {
-    type: Number,
-    required: [true, 'A tour must have a price']
-  }
-});
-
-const Tour = mongoose.model('Tour', tourSchema);
-
-const testTour = new Tour({
-  name: 'The Forest Hiker',
-  rating: 4.4,
-  price: 497
-});
-
-testTour
-  .save()
-  .then(doc => {
-    console.log('TEST TOUR SAVED !!! 💪\n', doc);
-  })
-  .catch(error => {
-    console.log('🧨 error:', error);
-  });
 app.listen(port, helpers.onAppStart);

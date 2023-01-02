@@ -5,7 +5,7 @@ const H = require(`${__dirname}/../misc/helpers.js`);
 const controller = require(`${__dirname}/../controllers/users.js`);
 
 const router = express.Router();
-router.use('id', H.checkId);
+// router.use('id', H.checkId);
 
 router
   .route('/')

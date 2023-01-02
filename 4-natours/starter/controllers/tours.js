@@ -1,52 +1,47 @@
 const fs = require('fs');
 
 const K = require(`${__dirname}/../misc/constants.js`);
+const Tour = require(`${__dirname}/../models/tour.js`);
 
 const onGetAll = (req, res) => {
   res.status(200).json({
     status: K.STATUS.success,
-    requestedAt: req.requestedAt,
-    count: K.toursData.length,
-    data: {
-      tours: K.toursData
-    }
+    requestedAt: req.requestedAt
+    // count: K.toursData.length,
+    // data: {
+    //   tours: K.toursData
+    // }
   });
 };
 
 const onGet = (req, res) => {
   const id = parseInt(req.params.id, 10);
-  const tour = K.toursData.find(item => item.id === id);
+  // const tour = K.toursData.find(item => item.id === id);
 
-  res.status(200).json({
-    status: K.STATUS.success,
-    data: {
-      tour
-    }
-  });
+  // res.status(200).json({
+  //   status: K.STATUS.success,
+  //   data: {
+  //     tour
+  //   }
+  // });
 };
 
 const onAddNew = (req, res) => {
-  const newItemId = K.toursData[K.toursData.length - 1].id + 1;
-  const newItem = Object.assign({ id: newItemId }, req.body);
-
-  K.toursData.push(newItem);
-  const jsonString = JSON.stringify(K.toursData);
-  fs.writeFile(K.tourFilePath, jsonString, _ => {
-    res.status(201).json({
-      status: K.STATUS.success,
-      data: {
-        tour: newItem
-      }
-    });
+  res.status(201).json({
+    status: K.STATUS.success
+    // data: {
+    //   tour: newItem
+    // }
   });
 };
 
 const onEdit = (req, res) => {
   const id = parseInt(req.params.id, 10);
-  const tour = K.toursData.find(item => item.id === id);
+  // const tour = K.toursData.find(item => item.id === id);
 
   res.status(200).json({
-    tour: tour
+    status: K.STATUS.success,
+    tour: 'Update tour...'
   });
 };
 
