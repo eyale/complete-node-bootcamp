@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const K = require(`${__dirname}/constants.js`);
 
 const onAppStart = () => {
-  console.log(`📲 ${K.APP_NAME} is running at ${process.env.PORT} PORT`);
+  console.log(`📲 ${K.APP_NAME} is running `);
 };
 
 const onMongooseConnect = _ => {
@@ -55,6 +55,5 @@ const applyMiddlewares = app => {
 module.exports = {
   onAppStart,
   onMongooseConnect,
-  applyMiddlewares,
-  checkBody
+  applyMiddlewares
 };

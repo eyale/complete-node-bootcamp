@@ -26,13 +26,23 @@ const onGet = (req, res) => {
   // });
 };
 
-const onAddNew = (req, res) => {
-  res.status(201).json({
-    status: K.STATUS.success
-    // data: {
-    //   tour: newItem
-    // }
-  });
+const onAddNew = async (req, res) => {
+  try {
+    const newItem = await Tour.create(req.body);
+
+    res.status(201).json({
+      status: K.STATUS.success,
+      data: {
+        tour: newItem
+      }
+    });
+  } catch (error) {
+    console.log('❗ > `error', error);
+    res.status(400).json({
+      status: K.STATUS.fail,
+      message: `Invalid data send`
+    });
+  }
 };
 
 const onEdit = (req, res) => {
