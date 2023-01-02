@@ -17,18 +17,18 @@ const addRequestedAtToParams = (req, res, next) => {
   next();
 };
 
-const checkBody = (req, res, next) => {
-  const { name, price } = req.body;
+// const checkBody = (req, res, next) => {
+//   const { name, price } = req.body;
 
-  if (!name || !price) {
-    return res.status(404).json({
-      status: K.STATUS.fail,
-      message: 'Invalid name or price parameter'
-    });
-  }
+//   if (!name || !price) {
+//     return res.status(404).json({
+//       status: K.STATUS.fail,
+//       message: 'Invalid name or price parameter'
+//     });
+//   }
 
-  next();
-};
+//   next();
+// };
 
 // const checkId = (req, res, next, val) => {
 //   const id = parseInt(val, 10);

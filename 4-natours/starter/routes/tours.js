@@ -9,7 +9,7 @@ const router = express.Router();
 router
   .route('/')
   .get(controller.onGetAll)
-  .post(H.checkBody, controller.onAddNew);
+  .post(controller.onAddNew);
 
 router
   .route('/:id')
