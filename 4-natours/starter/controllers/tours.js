@@ -54,7 +54,6 @@ const onAddNew = async (req, res) => {
       }
     });
   } catch (error) {
-    console.log('❗ > `error', error);
     res.status(400).json({
       status: K.STATUS.fail,
       message: `Invalid data send`
@@ -62,8 +61,28 @@ const onAddNew = async (req, res) => {
   }
 };
 
-const onEdit = (req, res) => {
-  const id = parseInt(req.params.id, 10);
+const onEdit = async (req, res) => {
+  try {
+    const {
+      params: { id },
+      body: withContent
+    } = req;
+
+    const options = { new: true, runValidators: true };
+    const tour = await Tour.findByIdAndUpdate(id, withContent, options);
+
+    res.status(200).json({
+      status: K.STATUS.success,
+      data: {
+        tour
+      }
+    });
+  } catch (error) {
+    res.status(401).json({
+      status: K.STATUS.fail,
+      message: `Invalid data send`
+    });
+  }
   // const tour = K.toursData.find(item => item.id === id);
 
   res.status(200).json({
