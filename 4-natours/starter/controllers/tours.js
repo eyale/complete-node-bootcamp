@@ -91,11 +91,23 @@ const onEdit = async (req, res) => {
   });
 };
 
-const onDelete = (req, res) => {
-  res.status(204).json({
-    status: K.STATUS.success,
-    data: null
-  });
+const onDelete = async (req, res) => {
+  try {
+    const {
+      params: { id }
+    } = req;
+
+    await Tour.findByIdAndDelete(id);
+    res.status(204).json({
+      status: K.STATUS.success,
+      data: null
+    });
+  } catch (error) {
+    res.status(401).json({
+      status: K.STATUS.error,
+      message: 'Invalid data send'
+    });
+  }
 };
 
 module.exports = {
