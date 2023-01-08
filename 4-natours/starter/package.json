@@ -6,6 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
+    "upload:data": "node ./dev-data/data/import-dev-data.js --import",
+    "delete:data": "node ./dev-data/data/import-dev-data.js --delete",
     "start:prod": "NODE_ENV=production nodemon server.js"
   },
   "author": "",
