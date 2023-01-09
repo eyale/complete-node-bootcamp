@@ -12,12 +12,18 @@ const onGetAll = async (req, res) => {
   try {
     // 1 BUILD query
     const queryParams = { ...req.query };
+    let queryString = JSON.stringify(queryParams);
+    queryString = queryString.replace(
+      /\b(gte|gt|lte|lt)\b/g,
+      match => `$${match}`
+    );
+    console.log('❗ >\n queryString', JSON.parse(queryString));
 
     excludedFields.forEach(field => {
       delete queryParams[field];
     });
 
-    const query = Tour.find(queryParams);
+    const query = Tour.find(JSON.parse(queryString));
 
     // const tours = await Tour.find()
     //   .where('duration')
