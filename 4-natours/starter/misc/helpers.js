@@ -45,6 +45,7 @@ const addRequestedAtToParams = (req, res, next) => {
 
 const applyMiddlewares = app => {
   if (process.env.NODE_ENV === 'development') {
+    // logger
     app.use(morgan('dev'));
   }
   app.use(express.json());

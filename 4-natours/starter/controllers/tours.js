@@ -6,9 +6,29 @@
 const K = require(`${__dirname}/../misc/constants.js`);
 const Tour = require(`${__dirname}/../models/tour.js`);
 
+const excludedFields = ['sort', 'page', 'limit', 'fields'];
+
 const onGetAll = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    // 1 BUILD query
+    const queryParams = { ...req.query };
+
+    excludedFields.forEach(field => {
+      delete queryParams[field];
+    });
+
+    const query = Tour.find(queryParams);
+
+    // const tours = await Tour.find()
+    //   .where('duration')
+    //   .equals(5)
+    //   .where('difficulty')
+    //   .equals('easy');
+
+    // 2 EXECUTE query
+    const tours = await query;
+
+    // 3 SEND response
     res.status(200).json({
       status: K.STATUS.success,
       requestedAt: req.requestedAt,
