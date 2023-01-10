@@ -6,24 +6,32 @@
 const K = require(`${__dirname}/../misc/constants.js`);
 const Tour = require(`${__dirname}/../models/tour.js`);
 
-const excludedFields = ['sort', 'page', 'limit', 'fields'];
-
 const onGetAll = async (req, res) => {
   try {
     // 1 BUILD query
     const queryParams = { ...req.query };
-    let queryString = JSON.stringify(queryParams);
-    queryString = queryString.replace(
-      /\b(gte|gt|lte|lt)\b/g,
-      match => `$${match}`
-    );
-    console.log('❗ >\n queryString', JSON.parse(queryString));
+    const excludedFields = ['sort', 'page', 'limit', 'fields'];
 
     excludedFields.forEach(field => {
       delete queryParams[field];
     });
 
-    const query = Tour.find(JSON.parse(queryString));
+    let queryString = JSON.stringify(queryParams);
+    queryString = queryString.replace(
+      /\b(gte|gt|lte|lt)\b/g,
+      match => `$${match}`
+    );
+
+    let query = Tour.find(JSON.parse(queryString));
+
+    // 2 SORTING
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      console.log('❗ >\n sortBy', sortBy);
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt');
+    }
 
     // const tours = await Tour.find()
     //   .where('duration')
@@ -31,7 +39,7 @@ const onGetAll = async (req, res) => {
     //   .where('difficulty')
     //   .equals('easy');
 
-    // 2 EXECUTE query
+    // 3 EXECUTE query
     const tours = await query;
 
     // 3 SEND response
