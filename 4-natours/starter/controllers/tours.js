@@ -6,6 +6,13 @@
 const K = require(`${__dirname}/../misc/constants.js`);
 const Tour = require(`${__dirname}/../models/tour.js`);
 
+const topFiveCheap = (req, _, next) => {
+  req.query.limit = 5;
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
+
 const onGetAll = async (req, res) => {
   try {
     // 1 - BUILD query
@@ -160,6 +167,7 @@ const onDelete = async (req, res) => {
 };
 
 module.exports = {
+  topFiveCheap,
   onGetAll,
   onGet,
   onAddNew,

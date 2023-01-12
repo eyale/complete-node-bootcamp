@@ -6,6 +6,8 @@ const H = require(`${__dirname}/../misc/helpers.js`);
 const router = express.Router();
 // router.param('id', H.checkId);
 
+router.route('/top-5-cheap').get(controller.topFiveCheap, controller.onGetAll);
+
 router
   .route('/')
   .get(controller.onGetAll)
