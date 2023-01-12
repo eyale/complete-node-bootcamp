@@ -27,7 +27,6 @@ const onGetAll = async (req, res) => {
     // 2 SORTING
     if (req.query.sort) {
       const sortBy = req.query.sort.split(',').join(' ');
-      console.log('❗ >\n sortBy', sortBy);
       query = query.sort(sortBy);
     } else {
       query = query.sort('-createdAt');
