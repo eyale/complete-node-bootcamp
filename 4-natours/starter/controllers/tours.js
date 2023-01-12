@@ -8,7 +8,7 @@ const Tour = require(`${__dirname}/../models/tour.js`);
 
 const onGetAll = async (req, res) => {
   try {
-    // 1 BUILD query
+    // 1 - BUILD query
     const queryParams = { ...req.query };
     const excludedFields = ['sort', 'page', 'limit', 'fields'];
 
@@ -24,15 +24,15 @@ const onGetAll = async (req, res) => {
 
     let query = Tour.find(JSON.parse(queryString));
 
-    // 2 SORTING
+    // 2 - SORTING
     if (req.query.sort) {
       const sortBy = req.query.sort.split(',').join(' ');
       query = query.sort(sortBy);
     } else {
-      query = query.sort('-createdAt');
+      query = query.sort('-createdAt _id');
     }
 
-    // 3 Properties limit - respond with requested properties
+    // 3 - Properties limit - respond with requested properties
     if (req.query.fields) {
       const fields = req.query.fields.split(',').join(' ');
       query = query.select(fields);
@@ -40,28 +40,36 @@ const onGetAll = async (req, res) => {
       query = query.select('-__v');
     }
 
-    // const tours = await Tour.find()
-    //   .where('duration')
-    //   .equals(5)
-    //   .where('difficulty')
-    //   .equals('easy');
+    // 4 - Pagination
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 100;
+    const skip = (page - 1) * limit; // 0 - value incase no page
 
-    // 3 EXECUTE query
+    query = query.skip(skip).limit(limit);
+
+    const count = await Tour.countDocuments();
+    if (req.query.page) {
+      if (skip >= count) throw new Error('Page not exists');
+    }
+
+    // 5 EXECUTE query
     const tours = await query;
 
-    // 3 SEND response
+    // 6 SEND response
     res.status(200).json({
       status: K.STATUS.success,
       requestedAt: req.requestedAt,
-      count: tours.length,
       data: {
+        count,
+        page,
+        skip,
         tours: tours
       }
     });
   } catch (error) {
     res.status(401).json({
       status: K.STATUS.fail,
-      message: 'Error'
+      message: `Error: ${error.message}`
     });
   }
 };
