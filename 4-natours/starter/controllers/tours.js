@@ -127,11 +127,50 @@ const onDelete = async (req, res) => {
   }
 };
 
+const getTourStats = async (_, res) => {
+  try {
+    const matchAggr = { $match: { ratingsAverage: { $gte: 4.5 } } };
+    const groupAggr = {
+      $group: {
+        // _id: null,
+        // _id: '$difficulty', // for each difficulty
+        _id: { $toUpper: '$difficulty' }, // uppercase prop
+        numTours: { $sum: 1 },
+        numRatings: { $sum: '$ratingsQuantity' },
+        avgRating: { $avg: '$ratingsAverage' },
+        avgPrice: { $avg: '$price' },
+        minPrice: { $min: '$price' },
+        maxPrice: { $max: '$price' }
+      }
+    };
+    const sortAggr = { $sort: { avgPrice: 1 } };
+    // const matchAllExceptEasy = { $match: { _id: { $ne: 'EASY' } } };
+
+    const stats = await Tour.aggregate([
+      matchAggr,
+      groupAggr,
+      sortAggr
+      /*, matchAllExceptEasy */
+    ]);
+
+    res.status(200).json({
+      status: K.STATUS.success,
+      data: { stats }
+    });
+  } catch (error) {
+    res.status(401).json({
+      status: K.STATUS.error,
+      message: `Error: ${error.message}`
+    });
+  }
+};
+
 module.exports = {
   topFiveCheap,
   onGetAll,
   onGet,
   onAddNew,
   onEdit,
-  onDelete
+  onDelete,
+  getTourStats
 };
