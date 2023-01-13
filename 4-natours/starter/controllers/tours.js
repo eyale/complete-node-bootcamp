@@ -5,6 +5,7 @@
 
 const K = require(`${__dirname}/../misc/constants.js`);
 const Tour = require(`${__dirname}/../models/tour.js`);
+const APIFeatures = require(`${__dirname}/../misc/apiFeatures.js`);
 
 const topFiveCheap = (req, _, next) => {
   req.query.limit = 5;
@@ -15,52 +16,14 @@ const topFiveCheap = (req, _, next) => {
 
 const onGetAll = async (req, res) => {
   try {
-    // 1 - BUILD query
-    const queryParams = { ...req.query };
-    const excludedFields = ['sort', 'page', 'limit', 'fields'];
-
-    excludedFields.forEach(field => {
-      delete queryParams[field];
-    });
-
-    let queryString = JSON.stringify(queryParams);
-    queryString = queryString.replace(
-      /\b(gte|gt|lte|lt)\b/g,
-      match => `$${match}`
-    );
-
-    let query = Tour.find(JSON.parse(queryString));
-
-    // 2 - SORTING
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' ');
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort('-createdAt _id');
-    }
-
-    // 3 - Properties limit - respond with requested properties
-    if (req.query.fields) {
-      const fields = req.query.fields.split(',').join(' ');
-      query = query.select(fields);
-    } else {
-      query = query.select('-__v');
-    }
-
-    // 4 - Pagination
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 100;
-    const skip = (page - 1) * limit; // 0 - value incase no page
-
-    query = query.skip(skip).limit(limit);
-
     const count = await Tour.countDocuments();
-    if (req.query.page) {
-      if (skip >= count) throw new Error('Page not exists');
-    }
-
     // 5 EXECUTE query
-    const tours = await query;
+    const apiFeatures = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitProperties()
+      .paginate();
+    const tours = await apiFeatures.query;
 
     // 6 SEND response
     res.status(200).json({
@@ -68,8 +31,6 @@ const onGetAll = async (req, res) => {
       requestedAt: req.requestedAt,
       data: {
         count,
-        page,
-        skip,
         tours: tours
       }
     });
