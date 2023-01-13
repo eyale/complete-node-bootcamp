@@ -121,7 +121,7 @@ const onDelete = async (req, res) => {
     });
   } catch (error) {
     res.status(401).json({
-      status: K.STATUS.error,
+      status: K.STATUS.fail,
       message: 'Invalid data send'
     });
   }
@@ -159,7 +159,66 @@ const getTourStats = async (_, res) => {
     });
   } catch (error) {
     res.status(401).json({
-      status: K.STATUS.error,
+      status: K.STATUS.fail,
+      message: `Error: ${error.message}`
+    });
+  }
+};
+
+const getMonthlyPlan = async (req, res) => {
+  try {
+    const { year } = req.params;
+
+    const unwindAggr = { $unwind: '$startDates' };
+    const matchAggr = {
+      $match: {
+        startDates: {
+          $gte: new Date(`${year}-01-01`),
+          $lte: new Date(`${year}-12-31`)
+        }
+      }
+    };
+    const groupAggr = {
+      $group: {
+        _id: { $month: '$startDates' },
+        toursStartCount: { $sum: 1 },
+        tours: { $push: '$name' }
+      }
+    };
+    const addFieldsAggr = {
+      $addFields: { month: '$_id' }
+    };
+    const reduceIdAggr = {
+      $project: {
+        _id: 0
+      }
+    };
+    const sortAggr = {
+      $sort: {
+        toursStartCount: -1
+      }
+    };
+    const limitAggr = {
+      $limit: 7
+    };
+
+    const plan = await Tour.aggregate([
+      unwindAggr,
+      matchAggr,
+      groupAggr,
+      addFieldsAggr,
+      reduceIdAggr,
+      sortAggr,
+      limitAggr
+    ]);
+
+    res.status(200).json({
+      status: K.STATUS.success,
+      data: { plan }
+    });
+  } catch (error) {
+    res.status(401).json({
+      status: K.STATUS.fail,
       message: `Error: ${error.message}`
     });
   }
@@ -172,5 +231,6 @@ module.exports = {
   onAddNew,
   onEdit,
   onDelete,
-  getTourStats
+  getTourStats,
+  getMonthlyPlan
 };

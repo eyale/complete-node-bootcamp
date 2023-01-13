@@ -9,6 +9,7 @@ const router = express.Router();
 router.route('/top-5-cheap').get(controller.topFiveCheap, controller.onGetAll);
 
 router.route('/tour-stats').get(controller.getTourStats);
+router.route('/monthly-plan/:year').get(controller.getMonthlyPlan);
 
 router
   .route('/')
