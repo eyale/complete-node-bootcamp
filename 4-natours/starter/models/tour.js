@@ -4,6 +4,7 @@
 
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const validator = require('validator');
 
 const nameMaxLength = 40;
 const nameMinLength = 10;
@@ -17,7 +18,17 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       maxlength: [nameMaxLength, `Name is too long. ${nameMaxLength} is a max`],
-      minlength: [nameMinLength, `Name is too short. ${nameMinLength} is a min`]
+      minlength: [
+        nameMinLength,
+        `Name is too short. ${nameMinLength} is a min`
+      ],
+      validate: {
+        validator: function(val) {
+          const value = val.split(' ').join('');
+          return validator.isAlpha(value);
+        },
+        message: 'Name should contain letters only'
+      }
     },
     slug: String,
     duration: {
@@ -50,7 +61,16 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price']
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function(val) {
+          // works only on NEW item
+          return val < this.price;
+        },
+        message: 'Discount value ({VALUE}) should be less than price'
+      }
+    },
     summary: {
       type: String,
       required: [true, 'A tour must have a summary'],
