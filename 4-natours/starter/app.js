@@ -16,5 +16,9 @@ app.use(K.ROUTES.v1.tours, toursRouter);
  * USERS
  */
 app.use(K.ROUTES.v1.users, usersRouter);
+/**
+ * ALL OTHERS REQUESTS
+ */
+app.all('*', helpers.handleNotFoundRequest);
 
 module.exports = app;

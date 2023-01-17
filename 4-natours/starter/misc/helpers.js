@@ -53,8 +53,17 @@ const applyMiddlewares = app => {
   app.use(addRequestedAtToParams);
 };
 
+const handleNotFoundRequest = (req, res, next) => {
+  res.status(404).json({
+    status: K.STATUS.fail,
+    message: `${req.originalUrl} not found`
+  });
+  next();
+};
+
 module.exports = {
   onAppStart,
   onMongooseConnect,
-  applyMiddlewares
+  applyMiddlewares,
+  handleNotFoundRequest
 };
