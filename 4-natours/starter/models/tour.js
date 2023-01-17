@@ -104,8 +104,17 @@ tourSchema.pre(/^find/, function(next) {
 });
 
 tourSchema.post(/^find/, function(docs, next) {
-  console.log('🗄️ >\n docs', docs);
   console.log(`Query exec time: ${Date.now() - this.start}mls`);
+  next();
+});
+
+// AGGREGATION MIDDLEWARE/HOOK
+tourSchema.pre('aggregate', function(next) {
+  const aggregationExcludeSecretTour = {
+    $match: { secretTour: { $ne: true } }
+  };
+  this.pipeline().unshift(aggregationExcludeSecretTour);
+  console.log('💰', this.pipeline());
   next();
 });
 
