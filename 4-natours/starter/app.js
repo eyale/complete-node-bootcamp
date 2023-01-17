@@ -20,5 +20,9 @@ app.use(K.ROUTES.v1.users, usersRouter);
  * ALL OTHERS REQUESTS
  */
 app.all('*', helpers.handleNotFoundRequest);
+/**
+ * ERROR MIDDLEWARE
+ */
+app.use(helpers.errorMiddleware);
 
 module.exports = app;

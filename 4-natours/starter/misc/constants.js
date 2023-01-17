@@ -6,7 +6,8 @@ const API_VERSION = {
 
 const STATUS = {
   success: 'success',
-  fail: 'fail'
+  fail: 'fail',
+  error: 'error'
 };
 
 const API_METHOD = {
