@@ -5,13 +5,19 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
+const nameMaxLength = 40;
+const nameMinLength = 10;
+const difficultyEnum = ['easy', 'medium', 'difficult'];
+
 const tourSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, 'A tour must have a name'],
       unique: true,
-      trim: true
+      trim: true,
+      maxlength: [nameMaxLength, `Name is too long. ${nameMaxLength} is a max`],
+      minlength: [nameMinLength, `Name is too short. ${nameMinLength} is a min`]
     },
     slug: String,
     duration: {
@@ -24,11 +30,17 @@ const tourSchema = new mongoose.Schema(
     },
     difficulty: {
       type: String,
-      required: [true, 'A tour must have difficulty']
+      required: [true, 'A tour must have difficulty'],
+      enum: {
+        values: difficultyEnum,
+        message: `Allowed values for difficulty: ${difficultyEnum}`
+      }
     },
     ratingsAverage: {
       type: Number,
-      default: 4.5
+      default: 4.5,
+      min: [1, 'Rating should be more than 1'],
+      max: [5, 'Rating should be less than 5']
     },
     ratingsQuantity: {
       type: Number,
