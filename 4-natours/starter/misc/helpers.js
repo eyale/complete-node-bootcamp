@@ -2,6 +2,8 @@
 const express = require('express');
 const morgan = require('morgan');
 
+const AppError = require(`${__dirname}/appError.js`);
+
 const K = require(`${__dirname}/constants.js`);
 
 const onAppStart = () => {
@@ -58,13 +60,16 @@ const handleNotFoundRequest = (req, res, next) => {
   //   status: K.STATUS.fail,
   //   message: `${req.originalUrl} not found`
   // });
-  const err = new Error(`${req.originalUrl} not found`);
-  err.status = K.STATUS.fail;
-  err.statusCode = 404;
-  next(err);
+
+  // const err = new Error(`${req.originalUrl} not found`);
+  // err.status = K.STATUS.fail;
+  // err.statusCode = 404;
+
+  next(new AppError(`${req.originalUrl} not found`, 404));
 };
 
 const errorMiddleware = (err, req, res, next) => {
+  console.log(err.stack);
   err.statusCode = err.statusCode || 500;
   err.status = err.status || K.STATUS.error;
 
