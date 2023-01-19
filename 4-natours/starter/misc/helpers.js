@@ -60,22 +60,46 @@ const applyMiddlewares = app => {
 };
 
 const handleNotFoundRequest = (req, res, next) => {
-  // res.status(404).json({
-  //   status: K.STATUS.fail,
-  //   message: `${req.originalUrl} not found`
-  // });
-
-  // const err = new Error(`${req.originalUrl} not found`);
-  // err.status = K.STATUS.fail;
-  // err.statusCode = 404;
-
   next(new AppError(`${req.originalUrl} not found`, 404));
+};
+
+const sendErrorDev = (err, res) => {
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
+    stack: err.stack,
+    error: err
+  });
+};
+
+const sendErrorProd = (err, res) => {
+  // Operational error - trusted error
+  if (err.isOperational) {
+    res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message
+    });
+
+    // Unknown error
+  } else {
+    console.error('❗ ERROR', err);
+    res.status(err.statusCode).json({
+      status: K.STATUS.error,
+      message: 'Something went wrong 🤕'
+    });
+  }
 };
 
 const errorMiddleware = (err, req, res, next) => {
   console.log(err.stack);
   err.statusCode = err.statusCode || 500;
   err.status = err.status || K.STATUS.error;
+
+  if (process.env.NODE_ENV === 'development') {
+    sendErrorDev(err, res);
+  } else {
+    sendErrorProd(err, res);
+  }
 
   res.status(err.statusCode).json({
     status: err.status,
