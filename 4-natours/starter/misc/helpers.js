@@ -72,11 +72,6 @@ const sendErrorDev = (err, res) => {
   });
 };
 
-const handleCastErrorDB = err => {
-  const message = `Invalid ${err.path}: ${err.value}`;
-  return new AppError(message, 400);
-};
-
 const sendErrorProd = (err, res) => {
   // Operational error - trusted error
   if (err.isOperational) {
@@ -96,6 +91,17 @@ const sendErrorProd = (err, res) => {
   }
 };
 
+const handleCastErrorDB = err => {
+  const message = `Invalid ${err.path}: ${err.value}`;
+  return new AppError(message, 400);
+};
+
+const handleDuplicateError = err => {
+  const value = err.message.match(/(["'])(?:(?=(\\?))\2.)*?\1/)[0];
+  const message = `Invalid property value: ${value}. Use different`;
+  return new AppError(message, 400);
+};
+
 const errorMiddleware = (err, req, res, next) => {
   console.log(err.stack);
   err.statusCode = err.statusCode || 500;
@@ -109,7 +115,9 @@ const errorMiddleware = (err, req, res, next) => {
     if (error.name === K.ERROR_TYPE.cast) {
       error = handleCastErrorDB(error);
     }
-
+    if (error.code === K.ERROR_TYPE.code11000Duplicate) {
+      error = handleDuplicateError(error);
+    }
     sendErrorProd(error, res);
   }
 };
