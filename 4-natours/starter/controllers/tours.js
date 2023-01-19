@@ -6,6 +6,7 @@
 const K = require(`${__dirname}/../misc/constants.js`);
 const Tour = require(`${__dirname}/../models/tour.js`);
 const APIFeatures = require(`${__dirname}/../misc/apiFeatures.js`);
+const H = require(`${__dirname}/../misc/helpers.js`);
 
 const topFiveCheap = (req, _, next) => {
   req.query.limit = 5;
@@ -14,215 +15,160 @@ const topFiveCheap = (req, _, next) => {
   next();
 };
 
-const onGetAll = async (req, res) => {
-  try {
-    const count = await Tour.countDocuments();
-    // 5 EXECUTE query
-    const apiFeatures = new APIFeatures(Tour.find(), req.query)
-      .filter()
-      .sort()
-      .limitProperties()
-      .paginate();
-    const tours = await apiFeatures.query;
+const onGetAll = H.catchAsync(async (req, res, next) => {
+  const count = await Tour.countDocuments();
+  // 5 EXECUTE query
+  const apiFeatures = new APIFeatures(Tour.find(), req.query)
+    .filter()
+    .sort()
+    .limitProperties()
+    .paginate();
+  const tours = await apiFeatures.query;
 
-    // 6 SEND response
-    res.status(200).json({
-      status: K.STATUS.success,
-      requestedAt: req.requestedAt,
-      data: {
-        count,
-        tours: tours
-      }
-    });
-  } catch (error) {
-    res.status(401).json({
-      status: K.STATUS.fail,
-      message: `Error: ${error.message}`
-    });
-  }
-};
+  // 6 SEND response
+  res.status(200).json({
+    status: K.STATUS.success,
+    requestedAt: req.requestedAt,
+    data: {
+      count,
+      tours: tours
+    }
+  });
+});
 
-const onGet = async (req, res) => {
+const onGet = H.catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  try {
-    const tour = await Tour.findById(id);
-    res.status(200).json({
-      status: K.STATUS.success,
-      data: {
-        tour
-      }
-    });
-  } catch (error) {
-    res.status(401).json({
-      status: K.STATUS.fail,
-      message: 'Error'
-    });
-  }
-};
+  const tour = await Tour.findById(id);
+  res.status(200).json({
+    status: K.STATUS.success,
+    data: {
+      tour
+    }
+  });
+});
 
-const onAddNew = async (req, res) => {
-  try {
-    const newItem = await Tour.create(req.body);
+const onAddNew = H.catchAsync(async (req, res, next) => {
+  const newItem = await Tour.create(req.body);
 
-    res.status(201).json({
-      status: K.STATUS.success,
-      data: {
-        tour: newItem
-      }
-    });
-  } catch (error) {
-    res.status(400).json({
-      status: K.STATUS.fail,
-      message: error
-    });
-  }
-};
+  res.status(201).json({
+    status: K.STATUS.success,
+    data: {
+      tour: newItem
+    }
+  });
+});
 
-const onEdit = async (req, res) => {
-  try {
-    const {
-      params: { id },
-      body: withContent
-    } = req;
+const onEdit = H.catchAsync(async (req, res, next) => {
+  const {
+    params: { id },
+    body: withContent
+  } = req;
 
-    const options = { new: true, runValidators: true };
-    const tour = await Tour.findByIdAndUpdate(id, withContent, options);
-
-    res.status(200).json({
-      status: K.STATUS.success,
-      data: {
-        tour
-      }
-    });
-  } catch (error) {
-    res.status(401).json({
-      status: K.STATUS.fail,
-      message: `Invalid data send`
-    });
-  }
-  // const tour = K.toursData.find(item => item.id === id);
+  const options = { new: true, runValidators: true };
+  const tour = await Tour.findByIdAndUpdate(id, withContent, options);
 
   res.status(200).json({
     status: K.STATUS.success,
-    tour: 'Update tour...'
+    data: {
+      tour
+    }
   });
-};
+});
 
-const onDelete = async (req, res) => {
-  try {
-    const {
-      params: { id }
-    } = req;
+const onDelete = H.catchAsync(async (req, res, next) => {
+  const {
+    params: { id }
+  } = req;
 
-    await Tour.findByIdAndDelete(id);
-    res.status(204).json({
-      status: K.STATUS.success,
-      data: null
-    });
-  } catch (error) {
-    res.status(401).json({
-      status: K.STATUS.fail,
-      message: 'Invalid data send'
-    });
-  }
-};
+  await Tour.findByIdAndDelete(id);
+  res.status(204).json({
+    status: K.STATUS.success,
+    data: null
+  });
+});
 
-const getTourStats = async (_, res) => {
-  try {
-    const matchAggr = { $match: { ratingsAverage: { $gte: 4.5 } } };
-    const groupAggr = {
-      $group: {
-        // _id: null,
-        // _id: '$difficulty', // for each difficulty
-        _id: { $toUpper: '$difficulty' }, // uppercase prop
-        numTours: { $sum: 1 },
-        numRatings: { $sum: '$ratingsQuantity' },
-        avgRating: { $avg: '$ratingsAverage' },
-        avgPrice: { $avg: '$price' },
-        minPrice: { $min: '$price' },
-        maxPrice: { $max: '$price' }
+const getTourStats = H.catchAsync(async (_, res, next) => {
+  const matchAggr = { $match: { ratingsAverage: { $gte: 4.5 } } };
+  const groupAggr = {
+    $group: {
+      // _id: null,
+      // _id: '$difficulty', // for each difficulty
+      _id: { $toUpper: '$difficulty' }, // uppercase prop
+      numTours: { $sum: 1 },
+      numRatings: { $sum: '$ratingsQuantity' },
+      avgRating: { $avg: '$ratingsAverage' },
+      avgPrice: { $avg: '$price' },
+      minPrice: { $min: '$price' },
+      maxPrice: { $max: '$price' }
+    }
+  };
+  const sortAggr = { $sort: { avgPrice: 1 } };
+  // const matchAllExceptEasy = { $match: { _id: { $ne: 'EASY' } } };
+
+  const stats = await Tour.aggregate([
+    matchAggr,
+    groupAggr,
+    sortAggr
+    /*, matchAllExceptEasy */
+  ]);
+
+  res.status(200).json({
+    status: K.STATUS.success,
+    data: { stats }
+  });
+});
+
+const getMonthlyPlan = H.catchAsync(async (req, res, next) => {
+  const { year } = req.params;
+
+  const unwindAggr = { $unwind: '$startDates' };
+  const matchAggr = {
+    $match: {
+      startDates: {
+        $gte: new Date(`${year}-01-01`),
+        $lte: new Date(`${year}-12-31`)
       }
-    };
-    const sortAggr = { $sort: { avgPrice: 1 } };
-    // const matchAllExceptEasy = { $match: { _id: { $ne: 'EASY' } } };
+    }
+  };
+  const groupAggr = {
+    $group: {
+      _id: { $month: '$startDates' },
+      toursStartCount: { $sum: 1 },
+      tours: { $push: '$name' }
+    }
+  };
+  const addFieldsAggr = {
+    $addFields: { month: '$_id' }
+  };
+  const reduceIdAggr = {
+    $project: {
+      _id: 0
+    }
+  };
+  const sortAggr = {
+    $sort: {
+      toursStartCount: -1
+    }
+  };
+  const limitAggr = {
+    $limit: 7
+  };
 
-    const stats = await Tour.aggregate([
-      matchAggr,
-      groupAggr,
-      sortAggr
-      /*, matchAllExceptEasy */
-    ]);
+  const plan = await Tour.aggregate([
+    unwindAggr,
+    matchAggr,
+    groupAggr,
+    addFieldsAggr,
+    reduceIdAggr,
+    sortAggr,
+    limitAggr
+  ]);
 
-    res.status(200).json({
-      status: K.STATUS.success,
-      data: { stats }
-    });
-  } catch (error) {
-    res.status(401).json({
-      status: K.STATUS.fail,
-      message: `Error: ${error.message}`
-    });
-  }
-};
-
-const getMonthlyPlan = async (req, res) => {
-  try {
-    const { year } = req.params;
-
-    const unwindAggr = { $unwind: '$startDates' };
-    const matchAggr = {
-      $match: {
-        startDates: {
-          $gte: new Date(`${year}-01-01`),
-          $lte: new Date(`${year}-12-31`)
-        }
-      }
-    };
-    const groupAggr = {
-      $group: {
-        _id: { $month: '$startDates' },
-        toursStartCount: { $sum: 1 },
-        tours: { $push: '$name' }
-      }
-    };
-    const addFieldsAggr = {
-      $addFields: { month: '$_id' }
-    };
-    const reduceIdAggr = {
-      $project: {
-        _id: 0
-      }
-    };
-    const sortAggr = {
-      $sort: {
-        toursStartCount: -1
-      }
-    };
-    const limitAggr = {
-      $limit: 7
-    };
-
-    const plan = await Tour.aggregate([
-      unwindAggr,
-      matchAggr,
-      groupAggr,
-      addFieldsAggr,
-      reduceIdAggr,
-      sortAggr,
-      limitAggr
-    ]);
-
-    res.status(200).json({
-      status: K.STATUS.success,
-      data: { plan }
-    });
-  } catch (error) {
-    res.status(401).json({
-      status: K.STATUS.fail,
-      message: `Error: ${error.message}`
-    });
-  }
-};
+  res.status(200).json({
+    status: K.STATUS.success,
+    data: { plan }
+  });
+});
 
 module.exports = {
   topFiveCheap,

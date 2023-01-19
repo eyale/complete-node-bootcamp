@@ -19,6 +19,10 @@ const addRequestedAtToParams = (req, res, next) => {
   next();
 };
 
+const catchAsync = fn => (req, res, next) => {
+  fn(req, res, next).catch(next);
+};
+
 // const checkBody = (req, res, next) => {
 //   const { name, price } = req.body;
 
@@ -84,5 +88,6 @@ module.exports = {
   onMongooseConnect,
   applyMiddlewares,
   handleNotFoundRequest,
-  errorMiddleware
+  errorMiddleware,
+  catchAsync
 };
