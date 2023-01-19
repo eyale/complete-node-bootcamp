@@ -3,10 +3,11 @@
  * CONTROLLER Tours
  */
 
-const K = require(`${__dirname}/../misc/constants.js`);
-const Tour = require(`${__dirname}/../models/tour.js`);
-const APIFeatures = require(`${__dirname}/../misc/apiFeatures.js`);
-const H = require(`${__dirname}/../misc/helpers.js`);
+const K = require(`${__dirname}/../misc/constants`);
+const Tour = require(`${__dirname}/../models/tour`);
+const APIFeatures = require(`${__dirname}/../misc/apiFeatures`);
+const H = require(`${__dirname}/../misc/helpers`);
+const AppError = require(`${__dirname}/../misc/appError`);
 
 const topFiveCheap = (req, _, next) => {
   req.query.limit = 5;
@@ -39,6 +40,11 @@ const onGetAll = H.catchAsync(async (req, res, next) => {
 const onGet = H.catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const tour = await Tour.findById(id);
+
+  if (!tour) {
+    return next(new AppError(`Tour not found by id: ${id}`, 404));
+  }
+
   res.status(200).json({
     status: K.STATUS.success,
     data: {
@@ -67,6 +73,10 @@ const onEdit = H.catchAsync(async (req, res, next) => {
   const options = { new: true, runValidators: true };
   const tour = await Tour.findByIdAndUpdate(id, withContent, options);
 
+  if (!tour) {
+    return next(new AppError(`Tour not found by id: ${id}`, 404));
+  }
+
   res.status(200).json({
     status: K.STATUS.success,
     data: {
@@ -79,8 +89,12 @@ const onDelete = H.catchAsync(async (req, res, next) => {
   const {
     params: { id }
   } = req;
+  const tour = await Tour.findByIdAndDelete(id);
 
-  await Tour.findByIdAndDelete(id);
+  if (!tour) {
+    return next(new AppError(`Tour not found by id: ${id}`, 404));
+  }
+
   res.status(204).json({
     status: K.STATUS.success,
     data: null
