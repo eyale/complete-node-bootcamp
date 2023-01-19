@@ -72,6 +72,11 @@ const sendErrorDev = (err, res) => {
   });
 };
 
+const handleCastErrorDB = err => {
+  const message = `Invalid ${err.path}: ${err.value}`;
+  return new AppError(message, 400);
+};
+
 const sendErrorProd = (err, res) => {
   // Operational error - trusted error
   if (err.isOperational) {
@@ -83,6 +88,7 @@ const sendErrorProd = (err, res) => {
     // Unknown error
   } else {
     console.error('❗ ERROR', err);
+
     res.status(err.statusCode).json({
       status: K.STATUS.error,
       message: 'Something went wrong 🤕'
@@ -98,13 +104,14 @@ const errorMiddleware = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
   } else {
-    sendErrorProd(err, res);
-  }
+    let error = Object.assign(err);
 
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message
-  });
+    if (error.name === K.ERROR_TYPE.cast) {
+      error = handleCastErrorDB(error);
+    }
+
+    sendErrorProd(error, res);
+  }
 };
 
 module.exports = {

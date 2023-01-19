@@ -10,6 +10,10 @@ const STATUS = {
   error: 'error'
 };
 
+const ERROR_TYPE = {
+  cast: 'CastError'
+};
+
 const API_METHOD = {
   GET: 'GET',
   POST: 'POST',
@@ -35,5 +39,6 @@ module.exports = {
   ROUTES,
   tourFilePath,
   toursData,
-  API_METHOD
+  API_METHOD,
+  ERROR_TYPE
 };
