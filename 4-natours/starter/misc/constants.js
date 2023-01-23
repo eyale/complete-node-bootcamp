@@ -12,7 +12,8 @@ const STATUS = {
 
 const ERROR_TYPE = {
   cast: 'CastError',
-  code11000Duplicate: 11000
+  code11000Duplicate: 11000,
+  validation: 'ValidationError'
 };
 
 const API_METHOD = {

@@ -102,6 +102,15 @@ const handleDuplicateError = err => {
   return new AppError(message, 400);
 };
 
+const handleValidationError = error => {
+  const errors = Object.values(error.errors).map(item => {
+    console.log('❗ =>\n\n\n item', item);
+    return item;
+  });
+  const message = `Invalid  ${errors.join('. ')}`;
+  return new AppError(message, 400);
+};
+
 const errorMiddleware = (err, req, res, next) => {
   console.log(err.stack);
   err.statusCode = err.statusCode || 500;
@@ -117,6 +126,9 @@ const errorMiddleware = (err, req, res, next) => {
     }
     if (error.code === K.ERROR_TYPE.code11000Duplicate) {
       error = handleDuplicateError(error);
+    }
+    if (error.name === K.ERROR_TYPE.validation) {
+      error = handleValidationError(error);
     }
     sendErrorProd(error, res);
   }
