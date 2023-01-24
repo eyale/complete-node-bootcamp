@@ -1,6 +1,6 @@
 const express = require('express');
 
-const H = require(`${__dirname}/../misc/helpers.js`);
+// const H = require(`${__dirname}/../misc/helpers.js`);
 
 const userController = require(`${__dirname}/../controllers/users.js`);
 const authController = require(`${__dirname}/../controllers/auth.js`);

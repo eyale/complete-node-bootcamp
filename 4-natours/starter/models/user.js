@@ -4,6 +4,7 @@
 
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 const nameMaxLength = 40;
 const nameMinLength = 1;
@@ -46,8 +47,27 @@ const userSchema = new mongoose.Schema({
     minlength: passwordMinLength
   },
   confirmPassword: {
-    type: String
+    type: String,
+    require: [true, 'Password is empty'],
+    // Validation will work only on CREATE and SAVE in Mongo
+    validate: {
+      validator: function(value) {
+        return value === this.password;
+      },
+      message: 'Passwords are not the same'
+    }
   }
+});
+
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) {
+    return next();
+  }
+
+  this.password = await bcrypt.hash(this.password, 13);
+  this.confirmPassword = undefined;
+
+  next();
 });
 
 const User = mongoose.model('User', userSchema);

@@ -9,6 +9,7 @@ const H = require(`${__dirname}/../misc/helpers`);
 const User = require('../models/user');
 
 const signupAsync = H.catchAsync(async (req, res, next) => {
+  // const newUser = await User.save(req.body);
   const newUser = await User.create(req.body);
 
   res.status(200).json({
