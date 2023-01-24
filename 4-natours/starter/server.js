@@ -22,9 +22,15 @@ const connectOptions = {
   useFindAndModify: false
 };
 
-mongoose
-  .connect(DB_URI, connectOptions)
-  .catch(console.log)
-  .then(helpers.onMongooseConnect);
+mongoose.connect(DB_URI, connectOptions).then(helpers.onMongooseConnect);
 
-app.listen(port, helpers.onAppStart);
+const server = app.listen(port, helpers.onAppStart);
+
+process.on('unhandledRejection', err => {
+  console.log(err.name, err.message);
+  console.log('🧨 Unhandled rejection');
+
+  server.close(() => {
+    process.exit(1);
+  });
+});
