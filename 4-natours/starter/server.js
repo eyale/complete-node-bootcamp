@@ -9,6 +9,8 @@ const dotenv = require('dotenv');
 const helpers = require(`${__dirname}/misc/helpers`);
 const port = process.env.PORT || 8000;
 
+process.on('uncaughtException', helpers.uncaughtException);
+
 dotenv.config({ path: './config.env' });
 const app = require(`${__dirname}/app.js`);
 const DB_URI = process.env.DATABASE.replace(
@@ -27,10 +29,5 @@ mongoose.connect(DB_URI, connectOptions).then(helpers.onMongooseConnect);
 const server = app.listen(port, helpers.onAppStart);
 
 process.on('unhandledRejection', err => {
-  console.log(err.name, err.message);
-  console.log('🧨 Unhandled rejection');
-
-  server.close(() => {
-    process.exit(1);
-  });
+  helpers.unhandledRejection(server, err);
 });

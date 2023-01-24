@@ -134,11 +134,29 @@ const errorMiddleware = (err, req, res, next) => {
   }
 };
 
+const uncaughtException = err => {
+  console.log(`${err.name}: ${err.message}`);
+  console.log('🧨 Uncaught exception');
+
+  process.exit(1);
+};
+
+const unhandledRejection = (server, err) => {
+  console.log(`${err.name}: ${err.message}`);
+  console.log('🧨 Unhandled rejection');
+
+  server.close(() => {
+    process.exit(1);
+  });
+};
+
 module.exports = {
   onAppStart,
   onMongooseConnect,
   applyMiddlewares,
   handleNotFoundRequest,
   errorMiddleware,
-  catchAsync
+  catchAsync,
+  uncaughtException,
+  unhandledRejection
 };
