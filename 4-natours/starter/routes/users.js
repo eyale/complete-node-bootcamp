@@ -2,20 +2,23 @@ const express = require('express');
 
 const H = require(`${__dirname}/../misc/helpers.js`);
 
-const controller = require(`${__dirname}/../controllers/users.js`);
+const userController = require(`${__dirname}/../controllers/users.js`);
+const authController = require(`${__dirname}/../controllers/auth.js`);
 
 const router = express.Router();
 // router.use('id', H.checkId);
 
+router.post('/signup', authController.signupAsync);
+
 router
   .route('/')
-  .get(controller.onGetAll)
-  .post(controller.onAddNew);
+  .get(userController.onGetAll)
+  .post(userController.onAddNew);
 
 router
   .route('/:id')
-  .get(controller.onGet)
-  .patch(controller.onEdit)
-  .delete(controller.onDelete);
+  .get(userController.onGet)
+  .patch(userController.onEdit)
+  .delete(userController.onDelete);
 
 module.exports = router;
