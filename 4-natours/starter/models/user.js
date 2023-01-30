@@ -44,11 +44,13 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     require: [true, 'Password is empty'],
-    minlength: passwordMinLength
+    minlength: passwordMinLength,
+    select: false
   },
   confirmPassword: {
     type: String,
     require: [true, 'Password is empty'],
+    select: false,
     // Validation will work only on CREATE and SAVE in Mongo
     validate: {
       validator: function(value) {
@@ -69,6 +71,13 @@ userSchema.pre('save', async function(next) {
 
   next();
 });
+
+userSchema.methods.checkIsPasswordMatched = async function(
+  passwordToCheck,
+  hashedPassword
+) {
+  return await bcrypt.compare(passwordToCheck, hashedPassword);
+};
 
 const User = mongoose.model('User', userSchema);
 

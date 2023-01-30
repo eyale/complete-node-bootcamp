@@ -9,6 +9,7 @@ const router = express.Router();
 // router.use('id', H.checkId);
 
 router.post('/signup', authController.signupAsync);
+router.post('/login', authController.login);
 
 router
   .route('/')
