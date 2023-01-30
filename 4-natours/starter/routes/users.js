@@ -13,12 +13,12 @@ router.post('/login', authController.login);
 
 router
   .route('/')
-  .get(userController.onGetAll)
+  .get(authController.protect, userController.onGetAll)
   .post(userController.onAddNew);
 
 router
   .route('/:id')
-  .get(userController.onGet)
+  .get(authController.protect, userController.onGet)
   .patch(userController.onEdit)
   .delete(userController.onDelete);
 

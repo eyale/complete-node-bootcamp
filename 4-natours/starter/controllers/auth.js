@@ -1,6 +1,6 @@
 /**
  *
- * User controller
+ * Auth controller
  */
 
 const jwt = require('jsonwebtoken');
@@ -57,7 +57,29 @@ const login = H.catchAsync(async (req, res, next) => {
   });
 });
 
+const protect = H.catchAsync(async (req, res, next) => {
+  let token;
+  // 1 - is token exists
+  const isToken =
+    req.headers.authorization && req.headers.authorization.startsWith('Bearer');
+
+  if (isToken) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  if (!token) {
+    return next(new AppError(`Not authorized`, 401));
+  }
+  // 2 - validate token
+
+  // 3 - is user exist
+
+  // 4 - is password not changed
+
+  next();
+});
+
 module.exports = {
   signupAsync,
+  protect,
   login
 };
