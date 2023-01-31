@@ -3,6 +3,7 @@ const express = require('express');
 const controller = require(`${__dirname}/../controllers/tours.js`);
 const authController = require(`${__dirname}/../controllers/auth.js`);
 // const H = require(`${__dirname}/../misc/helpers.js`);
+const K = require(`${__dirname}/../misc/constants`);
 
 const router = express.Router();
 // router.param('id', H.checkId);
@@ -21,6 +22,10 @@ router
   .route('/:id')
   .get(controller.onGet)
   .patch(controller.onEdit)
-  .delete(controller.onDelete);
+  .delete(
+    authController.protect,
+    authController.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
+    controller.onDelete
+  );
 
 module.exports = router;

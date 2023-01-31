@@ -6,10 +6,6 @@ const AppError = require(`${__dirname}/appError.js`);
 
 const K = require(`${__dirname}/constants.js`);
 
-const onAppStart = () => {
-  console.log(`📲 ${K.APP_NAME} is running `);
-};
-
 const onMongooseConnect = _ => {
   console.log('🔌 MONGOOSE CONNECTED');
 };
@@ -161,7 +157,6 @@ const unhandledRejection = (server, err) => {
 };
 
 module.exports = {
-  onAppStart,
   onMongooseConnect,
   applyMiddlewares,
   handleNotFoundRequest,

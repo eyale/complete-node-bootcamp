@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
+const K = require(`${__dirname}/../misc/constants.js`);
+
 const nameMaxLength = 40;
 const nameMinLength = 1;
 const passwordMinLength = 8;
@@ -40,6 +42,11 @@ const userSchema = new mongoose.Schema({
   },
   photo: {
     type: String
+  },
+  role: {
+    type: String,
+    enum: Object.keys(K.ROLES).map(role => K.ROLES[role]),
+    default: K.ROLES.user
   },
   password: {
     type: String,

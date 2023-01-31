@@ -17,13 +17,21 @@ const getUsersToken = id =>
   });
 
 const signupAsync = H.catchAsync(async (req, res, next) => {
-  const { name, email, password, confirmPassword, passwordChangeAt } = req.body;
+  const {
+    name,
+    email,
+    password,
+    confirmPassword,
+    passwordChangeAt,
+    role
+  } = req.body;
   const newUser = await User.create({
     name,
     email,
     password,
     confirmPassword,
-    passwordChangeAt
+    passwordChangeAt,
+    role
   });
 
   const token = getUsersToken(newUser._id);
@@ -92,8 +100,18 @@ const protect = H.catchAsync(async (req, res, next) => {
   next();
 });
 
+const restrictTo = (...roles) => (req, res, next) => {
+  console.log(roles);
+  if (!roles.includes(req.user.role)) {
+    return next(new AppError(`Not Permitted for: ${req.user.role}`), 403);
+  }
+
+  next();
+};
+
 module.exports = {
   signupAsync,
   protect,
+  restrictTo,
   login
 };

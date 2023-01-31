@@ -7,7 +7,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
 const helpers = require(`${__dirname}/misc/helpers`);
-const port = process.env.PORT || 8000;
+const port = 8000;
+const K = require(`${__dirname}/misc/constants.js`);
 
 process.on('uncaughtException', helpers.uncaughtException);
 
@@ -26,7 +27,12 @@ const connectOptions = {
 
 mongoose.connect(DB_URI, connectOptions).then(helpers.onMongooseConnect);
 
-const server = app.listen(port, helpers.onAppStart);
+const server = app.listen(port, () => {
+  console.log(
+    '\x1b[41m%s\x1b[0m',
+    `📲 ${K.APP_NAME} is running on port: ${port}`
+  );
+});
 
 process.on('unhandledRejection', err => {
   helpers.unhandledRejection(server, err);

@@ -26,6 +26,13 @@ const API_METHOD = {
   DELETE: 'DELETE'
 };
 
+const ROLES = {
+  admin: 'admin',
+  user: 'user',
+  guide: 'guide',
+  leadGuide: 'lead-guide'
+};
+
 const ROUTES = {
   v1: {
     tours: `/api/${API_VERSION.v1}/tours`,
@@ -44,5 +51,6 @@ module.exports = {
   tourFilePath,
   toursData,
   API_METHOD,
-  ERROR_TYPE
+  ERROR_TYPE,
+  ROLES
 };
