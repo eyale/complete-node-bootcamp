@@ -4,6 +4,7 @@
  */
 
 const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 
 const K = require(`${__dirname}/../misc/constants`);
 const H = require(`${__dirname}/../misc/helpers`);
@@ -16,12 +17,13 @@ const getUsersToken = id =>
   });
 
 const signupAsync = H.catchAsync(async (req, res, next) => {
-  const { name, email, password, passwordConfirm } = req.body;
+  const { name, email, password, confirmPassword, passwordChangeAt } = req.body;
   const newUser = await User.create({
     name,
     email,
     password,
-    passwordConfirm
+    confirmPassword,
+    passwordChangeAt
   });
 
   const token = getUsersToken(newUser._id);
@@ -70,11 +72,23 @@ const protect = H.catchAsync(async (req, res, next) => {
     return next(new AppError(`Not authorized`, 401));
   }
   // 2 - validate token
+  const dataFromDecodedToken = await promisify(jwt.verify)(
+    token,
+    process.env.JWT_SECRET
+  );
 
   // 3 - is user exist
-
+  const user = await User.findById(dataFromDecodedToken.id);
+  if (!user) {
+    return next(new AppError('Deleted user', 401));
+  }
   // 4 - is password not changed
+  if (user.checkIsPassChangedAfterTokenReceived(dataFromDecodedToken.iat)) {
+    return next(new AppError('Password was changed', 401));
+  }
 
+  // GRANT ACCESS TO PROTECTED ROUTE
+  req.user = user;
   next();
 });
 

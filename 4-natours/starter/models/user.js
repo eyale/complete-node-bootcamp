@@ -50,7 +50,6 @@ const userSchema = new mongoose.Schema({
   confirmPassword: {
     type: String,
     require: [true, 'Password is empty'],
-    select: false,
     // Validation will work only on CREATE and SAVE in Mongo
     validate: {
       validator: function(value) {
@@ -58,7 +57,8 @@ const userSchema = new mongoose.Schema({
       },
       message: 'Passwords are not the same'
     }
-  }
+  },
+  passwordChangeAt: Date
 });
 
 userSchema.pre('save', async function(next) {
@@ -77,6 +77,21 @@ userSchema.methods.checkIsPasswordMatched = async function(
   hashedPassword
 ) {
   return await bcrypt.compare(passwordToCheck, hashedPassword);
+};
+
+userSchema.methods.checkIsPassChangedAfterTokenReceived = function(
+  tokenTimestamp
+) {
+  if (this.passwordChangeAt) {
+    const changeAtTimeStamp = parseInt(
+      this.passwordChangeAt.getTime() / 1000,
+      10
+    );
+    return changeAtTimeStamp > tokenTimestamp;
+  }
+
+  // not changed
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);

@@ -13,7 +13,9 @@ const STATUS = {
 const ERROR_TYPE = {
   cast: 'CastError',
   code11000Duplicate: 11000,
-  validation: 'ValidationError'
+  validation: 'ValidationError',
+  jsonWebTokenError: 'JsonWebTokenError',
+  tokenExpiredError: 'TokenExpiredError'
 };
 
 const API_METHOD = {

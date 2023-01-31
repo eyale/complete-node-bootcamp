@@ -111,6 +111,10 @@ const handleValidationError = error => {
   return new AppError(message, 400);
 };
 
+const handleJWTError = () => new AppError('Invalid token', 401);
+const handleJWTExpireError = token =>
+  new AppError(`Access token expired: ${token}`, 401);
+
 const errorMiddleware = (err, req, res, next) => {
   console.log(err.stack);
   err.statusCode = err.statusCode || 500;
@@ -129,6 +133,12 @@ const errorMiddleware = (err, req, res, next) => {
     }
     if (error.name === K.ERROR_TYPE.validation) {
       error = handleValidationError(error);
+    }
+    if (error.name === K.ERROR_TYPE.jsonWebTokenError) {
+      error = handleJWTError(error);
+    }
+    if (error.name === K.ERROR_TYPE.tokenExpiredError) {
+      error = handleJWTExpireError(req.headers.authorization.split(' ')[1]);
     }
     sendErrorProd(error, res);
   }
