@@ -56,7 +56,7 @@ const applyMiddlewares = app => {
 };
 
 const handleNotFoundRequest = (req, res, next) => {
-  next(new AppError(`${req.originalUrl} not found`, 404));
+  next(new AppError(`${req.method} ${req.originalUrl} not found`, 404));
 };
 
 const sendErrorDev = (err, res) => {

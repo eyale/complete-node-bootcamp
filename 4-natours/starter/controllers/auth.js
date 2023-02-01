@@ -9,6 +9,7 @@ const { promisify } = require('util');
 const K = require(`${__dirname}/../misc/constants`);
 const H = require(`${__dirname}/../misc/helpers`);
 const AppError = require(`${__dirname}/../misc/appError.js`);
+const { sendEmail } = require(`${__dirname}/../misc/email.js`);
 const User = require('../models/user');
 
 const getUsersToken = id =>
@@ -16,7 +17,7 @@ const getUsersToken = id =>
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 
-const signupAsync = H.catchAsync(async (req, res, next) => {
+const signup = H.catchAsync(async (req, res, next) => {
   const {
     name,
     email,
@@ -38,8 +39,10 @@ const signupAsync = H.catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: K.STATUS.success,
-    token,
-    data: { user: newUser }
+    data: {
+      token,
+      user: newUser
+    }
   });
 });
 
@@ -96,12 +99,12 @@ const protect = H.catchAsync(async (req, res, next) => {
   }
 
   // GRANT ACCESS TO PROTECTED ROUTE
+  // user will go to `restrictTo` middleware
   req.user = user;
   next();
 });
 
 const restrictTo = (...roles) => (req, res, next) => {
-  console.log(roles);
   if (!roles.includes(req.user.role)) {
     return next(new AppError(`Not Permitted for: ${req.user.role}`), 403);
   }
@@ -109,9 +112,56 @@ const restrictTo = (...roles) => (req, res, next) => {
   next();
 };
 
+const forgotPassword = H.catchAsync(async (req, res, next) => {
+  // 1 - get user based on POSTed email
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    return next(new AppError(`User not found: ${req.body.email}`, 404));
+  }
+  // 2 - generate reset token
+  const resetToken = user.createPasswordResetToken();
+  user.save({ validateBeforeSave: false });
+
+  // 3 - send it to users email
+  const resetURL = `${req.protocol}://${req.get(
+    'host'
+  )}/api/v1/users/resetPassword/${resetToken}`;
+
+  const message = `Forgot password? Submit reset password with new password. Confirm to: ${resetURL}.\nIgnore email if it was not you 🤷🏻‍♂️`;
+  const subject = 'Your password reset token valid only for 10 min';
+
+  const info = {
+    email: user.email,
+    subject,
+    message
+  };
+
+  try {
+    await sendEmail(info);
+
+    res.status(200).json({
+      status: K.STATUS.success,
+      data: {
+        message: `Reset token was sent. Please check email: ${user.email}.`
+      }
+    });
+  } catch (error) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    user.save({ validateBeforeSave: false });
+
+    return next(new AppError(`SEND MAIL error ${error.message}`, 500));
+  }
+});
+
+const resetPassword = (req, res, next) => {};
+
 module.exports = {
-  signupAsync,
+  signup,
   protect,
   restrictTo,
+  forgotPassword,
+  resetPassword,
   login
 };

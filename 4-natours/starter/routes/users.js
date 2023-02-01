@@ -8,8 +8,11 @@ const authController = require(`${__dirname}/../controllers/auth.js`);
 const router = express.Router();
 // router.use('id', H.checkId);
 
-router.post('/signup', authController.signupAsync);
+router.post('/signup', authController.signup);
 router.post('/login', authController.login);
+
+router.post('/forgotPassword', authController.forgotPassword);
+router.patch('/resetPassword/:token', authController.resetPassword);
 
 router
   .route('/')
