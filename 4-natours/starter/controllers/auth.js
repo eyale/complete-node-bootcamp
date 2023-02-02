@@ -5,6 +5,7 @@
 
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
+const crypto = require('crypto');
 
 const K = require(`${__dirname}/../misc/constants`);
 const H = require(`${__dirname}/../misc/helpers`);
@@ -155,7 +156,53 @@ const forgotPassword = H.catchAsync(async (req, res, next) => {
   }
 });
 
-const resetPassword = (req, res, next) => {};
+const resetPassword = H.catchAsync(async (req, res, next) => {
+  // 1 - find user by token
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  const findOptions = {
+    passwordResetToken: hashedToken,
+    passwordResetExpires: {
+      $gt: Date.now()
+    }
+  };
+  const user = await User.findOne(findOptions);
+
+  // 2 - token exp > now() && user => setNewPassword
+  if (!user) {
+    return next(new AppError(`User not found: invalid or expired token`, 404));
+  }
+
+  if (req.body.password && req.body.confirmPassword) {
+    return next(
+      new AppError(
+        `Invalid data. Password: ${req.body.password}, confirmPassword: ${
+          req.body.confirmPassword
+        }`,
+        404
+      )
+    );
+  }
+
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+
+  await user.save();
+
+  // 3 - user.changePasswordAt = new Date()
+  // 4 - send JWT token in response
+  const token = getUsersToken(user._id);
+
+  res.status(200).json({
+    status: K.STATUS.success,
+    data: { token }
+  });
+});
 
 module.exports = {
   signup,

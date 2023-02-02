@@ -7,10 +7,11 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
 const helpers = require(`${__dirname}/misc/helpers`);
+const errorController = require(`${__dirname}/controllers/error`);
 const port = 8000;
 const K = require(`${__dirname}/misc/constants.js`);
 
-process.on('uncaughtException', helpers.uncaughtException);
+process.on('uncaughtException', errorController.uncaughtException);
 
 dotenv.config({ path: './config.env' });
 const app = require(`${__dirname}/app.js`);
@@ -35,5 +36,5 @@ const server = app.listen(port, () => {
 });
 
 process.on('unhandledRejection', err => {
-  helpers.unhandledRejection(server, err);
+  errorController.unhandledRejection(server, err);
 });

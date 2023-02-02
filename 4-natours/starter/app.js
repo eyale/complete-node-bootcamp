@@ -2,6 +2,7 @@ const express = require('express');
 
 const K = require(`${__dirname}/misc/constants`);
 const helpers = require(`${__dirname}/misc/helpers`);
+const errorController = require(`${__dirname}/controllers/error`);
 const toursRouter = require(`${__dirname}/routes/tours`);
 const usersRouter = require(`${__dirname}/routes/users`);
 const app = express();
@@ -19,10 +20,10 @@ app.use(K.ROUTES.v1.users, usersRouter);
 /**
  * ALL OTHERS REQUESTS
  */
-app.all('*', helpers.handleNotFoundRequest);
+app.all('*', errorController.handleNotFoundRequest);
 /**
  * ERROR MIDDLEWARE
  */
-app.use(helpers.errorMiddleware);
+app.use(errorController.errorMiddleware);
 
 module.exports = app;
