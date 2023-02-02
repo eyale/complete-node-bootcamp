@@ -1,4 +1,4 @@
-const K = require(`${__dirname}/../misc/constants.js`);
+const K = require(`${__dirname}/../misc/constants`);
 const H = require(`${__dirname}/../misc/helpers`);
 
 const User = require('../models/user');

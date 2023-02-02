@@ -1,18 +1,22 @@
 const express = require('express');
 
-// const H = require(`${__dirname}/../misc/helpers.js`);
-
-const userController = require(`${__dirname}/../controllers/users.js`);
-const authController = require(`${__dirname}/../controllers/auth.js`);
+const userController = require(`${__dirname}/../controllers/users`);
+const authController = require(`${__dirname}/../controllers/auth`);
 
 const router = express.Router();
 // router.use('id', H.checkId);
 
+// always CHECK METHOD
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
+router.patch(
+  '/updatePassword',
+  authController.protect,
+  authController.updatePassword
+);
 
 router
   .route('/')

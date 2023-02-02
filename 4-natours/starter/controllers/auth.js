@@ -18,6 +18,18 @@ const getUsersToken = id =>
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 
+const createAndSendToken = (user, statusCode, res) => {
+  const token = getUsersToken(user._id);
+
+  res.status(statusCode).json({
+    status: K.STATUS.success,
+    data: {
+      token,
+      user
+    }
+  });
+};
+
 const signup = H.catchAsync(async (req, res, next) => {
   const {
     name,
@@ -36,15 +48,7 @@ const signup = H.catchAsync(async (req, res, next) => {
     role
   });
 
-  const token = getUsersToken(newUser._id);
-
-  res.status(200).json({
-    status: K.STATUS.success,
-    data: {
-      token,
-      user: newUser
-    }
-  });
+  createAndSendToken(newUser, 201, res);
 });
 
 const login = H.catchAsync(async (req, res, next) => {
@@ -63,12 +67,7 @@ const login = H.catchAsync(async (req, res, next) => {
   }
 
   // 3 - send token
-  const token = getUsersToken(user._id);
-
-  res.status(200).json({
-    status: K.STATUS.success,
-    data: { token }
-  });
+  createAndSendToken(user, 200, res);
 });
 
 const protect = H.catchAsync(async (req, res, next) => {
@@ -196,12 +195,41 @@ const resetPassword = H.catchAsync(async (req, res, next) => {
 
   // 3 - user.changePasswordAt = new Date()
   // 4 - send JWT token in response
-  const token = getUsersToken(user._id);
+  createAndSendToken(user, 200, res);
+});
 
-  res.status(200).json({
-    status: K.STATUS.success,
-    data: { token }
-  });
+const updatePassword = H.catchAsync(async (req, res, next) => {
+  const { password, passwordNew, confirmNewPassword } = req.body;
+  const { authorization } = req.headers;
+
+  let token;
+  const isToken = authorization && authorization.startsWith('Bearer');
+
+  if (isToken) {
+    token = authorization.split(' ')[1];
+  }
+  if (!token) {
+    return next(new AppError(`Not authorized`, 401));
+  }
+
+  // 3 - is user exist
+  const user = await User.findById(req.user.id).select('+password');
+  // 1 - find User
+  // 2 - is req.body.password is correct
+  const isPasswordCorrect = await user.checkIsPasswordMatched(
+    password,
+    user.password
+  );
+  if (!isPasswordCorrect) {
+    return next(new AppError('Invalid password'), 404);
+  }
+  // 3 - update password
+  user.password = passwordNew;
+  user.confirmPassword = confirmNewPassword;
+  await user.save();
+
+  // 4 - Log in user, send JWT
+  createAndSendToken(user, 200, res);
 });
 
 module.exports = {
@@ -210,5 +238,6 @@ module.exports = {
   restrictTo,
   forgotPassword,
   resetPassword,
+  updatePassword,
   login
 };
