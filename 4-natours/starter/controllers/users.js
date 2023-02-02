@@ -62,6 +62,15 @@ const onUpdateUserInfo = H.catchAsync(async (req, res, next) => {
   });
 });
 
+const onDeactivateUserAccount = H.catchAsync(async (req, res, next) => {
+  //
+  await User.findByIdAndUpdate(req.user.id, { isActive: false });
+
+  res.status(204).json({
+    status: K.STATUS.success
+  });
+});
+
 const onGetUser = (req, res) => {
   res.status(500).json({
     status: K.STATUS.fail,
@@ -96,5 +105,6 @@ module.exports = {
   onAddNew: onAddNewUser,
   onEdit: onEditUser,
   onDelete: onDeleteUser,
-  onUpdateUserInfo: onUpdateUserInfo
+  onUpdateUserInfo: onUpdateUserInfo,
+  onDeactivateUser: onDeactivateUserAccount
 };

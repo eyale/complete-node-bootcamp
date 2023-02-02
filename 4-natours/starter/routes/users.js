@@ -22,6 +22,11 @@ router.patch(
   authController.protect,
   userController.onUpdateUserInfo
 );
+router.delete(
+  '/deactivateUser',
+  authController.protect,
+  userController.onDeactivateUser
+);
 
 router
   .route('/')
