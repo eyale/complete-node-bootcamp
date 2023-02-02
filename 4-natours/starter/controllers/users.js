@@ -1,7 +1,20 @@
 const K = require(`${__dirname}/../misc/constants`);
 const H = require(`${__dirname}/../misc/helpers`);
+const AppError = require(`${__dirname}/../misc/appError`);
 
 const User = require('../models/user');
+
+const filterBody = (body, ...allowedProperties) => {
+  const newBody = {};
+
+  Object.keys(body).forEach(property => {
+    if (allowedProperties.includes(property)) {
+      newBody[property] = body[property];
+    }
+  });
+
+  return newBody;
+};
 
 const onGetAllUsers = H.catchAsync(async (req, res) => {
   const users = await User.find();
@@ -11,6 +24,40 @@ const onGetAllUsers = H.catchAsync(async (req, res) => {
     count: users.length,
     data: {
       users
+    }
+  });
+});
+
+const onUpdateUserInfo = H.catchAsync(async (req, res, next) => {
+  // 1 - throw error if user POSTs password
+  const { password, confirmPassword, ...rest } = req.body;
+  if (password || confirmPassword) {
+    return next(
+      new AppError(
+        'password and confirmPassword are not allowed to update with this route. Use /updatePassword',
+        400
+      )
+    );
+  }
+  // 3 - filter request body properties
+  const updateFieldsObject = filterBody(rest, 'name', 'email');
+
+  // 2 - update document
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user.id,
+    updateFieldsObject,
+    {
+      new: true,
+      runValidators: true
+    }
+  );
+
+  await updatedUser.save();
+
+  res.status(200).json({
+    status: K.STATUS.success,
+    data: {
+      user: updatedUser
     }
   });
 });
@@ -48,5 +95,6 @@ module.exports = {
   onGet: onGetUser,
   onAddNew: onAddNewUser,
   onEdit: onEditUser,
-  onDelete: onDeleteUser
+  onDelete: onDeleteUser,
+  onUpdateUserInfo: onUpdateUserInfo
 };
