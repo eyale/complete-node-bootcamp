@@ -21,6 +21,17 @@ const getUsersToken = id =>
 const createAndSendToken = (user, statusCode, res) => {
   const token = getUsersToken(user._id);
 
+  const cookieOptions = {
+    expires: H.getDays(process.env.JWT_EXPIRES_IN_COOKIE),
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true
+  };
+
+  res.cookie('jwt', token, cookieOptions);
+
+  user.password = undefined;
+  user.isActive = undefined;
+
   res.status(statusCode).json({
     status: K.STATUS.success,
     data: {

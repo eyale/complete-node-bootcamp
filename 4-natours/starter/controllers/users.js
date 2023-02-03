@@ -55,7 +55,7 @@ const onUpdateUserInfo = H.catchAsync(async (req, res, next) => {
   await updatedUser.save();
 
   res.status(200).json({
-    status: K.STATUS.success,
+    tatus: K.STATUS.success,
     data: {
       user: updatedUser
     }

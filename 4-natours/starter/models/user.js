@@ -7,7 +7,8 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
-const K = require(`${__dirname}/../misc/constants.js`);
+const H = require(`${__dirname}/../misc/helpers`);
+const K = require(`${__dirname}/../misc/constants`);
 
 const nameMaxLength = 40;
 const nameMinLength = 1;
@@ -86,6 +87,7 @@ userSchema.pre('save', function(next) {
   if (!this.isModified('password') || this.isNew) {
     return next();
   }
+  // approach to correct date
   this.passwordChangeAt = Date.now() - 1000;
   next();
 });
@@ -130,7 +132,7 @@ userSchema.methods.createPasswordResetToken = function() {
     .update(token)
     .digest('hex');
 
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  this.passwordResetExpires = H.getMinutes(10);
 
   return token;
 };
