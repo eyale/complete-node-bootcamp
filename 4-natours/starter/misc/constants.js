@@ -43,6 +43,15 @@ const ROUTES = {
 const tourFilePath = `${__dirname}/../dev-data/data/tours-simple.json`;
 const toursData = JSON.parse(fs.readFileSync(tourFilePath));
 
+const allowedPropertiesToDuplicate = [
+  'duration',
+  'ratingsAverage',
+  'ratingsQuantity',
+  'maxGroupSize',
+  'difficulty',
+  'price'
+];
+
 module.exports = {
   APP_NAME: 'Natours',
   API_VERSION,
@@ -52,5 +61,6 @@ module.exports = {
   toursData,
   API_METHOD,
   ERROR_TYPE,
-  ROLES
+  ROLES,
+  allowedPropertiesToDuplicate
 };

@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const hpp = require('hpp');
 
 const K = require(`${__dirname}/misc/constants`);
 const H = require(`${__dirname}/misc/helpers`);
@@ -16,6 +17,11 @@ app.use(helmet());
 app.use('/api', H.limiter);
 app.use(mongoSanitize());
 app.use(xss());
+app.use(
+  hpp({
+    whitelist: K.allowedPropertiesToDuplicate
+  })
+);
 H.applyMiddlewares(app);
 
 // Data sanitization against NoSQL query injection
