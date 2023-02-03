@@ -53,11 +53,13 @@ const applyMiddlewares = app => {
 
 const getDays = days => new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 const getMinutes = minutes => Date.now() + minutes * 60 * 1000;
+const getMilisecondsFromMinutes = minutes => minutes * 60 * 1000;
 
 module.exports = {
   onMongooseConnect,
   applyMiddlewares,
   getDays,
   getMinutes,
+  getMilisecondsFromMinutes,
   catchAsync
 };
