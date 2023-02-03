@@ -1,5 +1,5 @@
 const express = require('express');
-const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const K = require(`${__dirname}/misc/constants`);
 const H = require(`${__dirname}/misc/helpers`);
@@ -9,17 +9,9 @@ const usersRouter = require(`${__dirname}/routes/users`);
 
 const app = express();
 
-const limiter = rateLimit({
-  max: 100, // Limit each IP to 100 requests per `window` (here, per 60 minutes)
-  windowMs: H.getMilisecondsFromMinutes(60),
-  message: 'Too many requests. Try again in 1 hour.'
-  // standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  // legacyHeaders: false // Disable the `X-RateLimit-*` headers
-});
-
-app.use('/api', limiter);
-
 // middleware
+app.use(helmet());
+app.use('/api', H.limiter);
 H.applyMiddlewares(app);
 /**
  * TOURS
