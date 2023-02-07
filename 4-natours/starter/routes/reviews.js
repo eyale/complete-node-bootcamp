@@ -4,7 +4,7 @@ const reviewController = require(`${__dirname}/../controllers/reviews`);
 const authController = require(`${__dirname}/../controllers/auth`);
 const K = require(`${__dirname}/../misc/constants`);
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router
   .route('/')

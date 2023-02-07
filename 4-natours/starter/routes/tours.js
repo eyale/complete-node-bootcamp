@@ -2,12 +2,17 @@ const express = require('express');
 
 const controller = require(`${__dirname}/../controllers/tours`);
 const authController = require(`${__dirname}/../controllers/auth`);
-const reviewController = require(`${__dirname}/../controllers/reviews`);
+
+const reviewRouter = require(`${__dirname}/reviews`);
+
 // const H = require(`${__dirname}/../misc/helpers`);
 const K = require(`${__dirname}/../misc/constants`);
 
 const router = express.Router();
 // router.param('id', H.checkId);
+
+// mounting router
+router.use('/:tourId/reviews', reviewRouter);
 
 router.route('/top-5-cheap').get(controller.topFiveCheap, controller.onGetAll);
 
@@ -27,14 +32,6 @@ router
     authController.protect,
     authController.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
     controller.onDelete
-  );
-
-router
-  .route('/:tourId/reviews')
-  .post(
-    authController.protect,
-    authController.restrictTo(K.ROLES.user),
-    reviewController.onAddReview
   );
 
 module.exports = router;
