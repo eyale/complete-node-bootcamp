@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
 
-const User = require('./user');
+// const User = require('./user');
 
 const nameMaxLength = 40;
 const nameMinLength = 10;
@@ -135,7 +135,7 @@ const tourSchema = new mongoose.Schema(
         day: Number
       }
     ],
-    guides: Array
+    guides: [{ type: mongoose.Schema.ObjectId, ref: 'User' }]
   },
   {
     toJSON: { virtuals: true },
@@ -153,12 +153,12 @@ tourSchema.pre('save', function(next) {
   next();
 });
 
-tourSchema.pre('save', async function(next) {
-  const guidesPromises = this.guides.map(async id => await User.findById(id));
+// tourSchema.pre('save', async function(next) {
+//   const guidesPromises = this.guides.map(async id => await User.findById(id));
 
-  this.guides = await Promise.all(guidesPromises);
-  next();
-});
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
 
 // tourSchema.pre('save', function(next) {
 //   console.log('....saving document');
@@ -176,6 +176,15 @@ tourSchema.pre(/^find/, function(next) {
   this.find({ secretTour: { $ne: true } });
 
   this.start = Date.now();
+  next();
+});
+
+tourSchema.pre(/^find/, function(next) {
+  const populateOptions = {
+    path: 'guides', // what to include in response
+    select: '-__v -passwordChangeAt' // eliminate from response
+  };
+  this.populate(populateOptions);
   next();
 });
 
