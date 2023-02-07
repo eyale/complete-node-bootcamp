@@ -4,6 +4,7 @@ const userController = require(`${__dirname}/../controllers/users`);
 const authController = require(`${__dirname}/../controllers/auth`);
 
 const router = express.Router();
+
 // router.use('id', H.checkId);
 
 // always CHECK METHOD

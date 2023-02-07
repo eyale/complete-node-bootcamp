@@ -2,6 +2,7 @@ const express = require('express');
 
 const controller = require(`${__dirname}/../controllers/tours`);
 const authController = require(`${__dirname}/../controllers/auth`);
+const reviewController = require(`${__dirname}/../controllers/reviews`);
 // const H = require(`${__dirname}/../misc/helpers`);
 const K = require(`${__dirname}/../misc/constants`);
 
@@ -26,6 +27,14 @@ router
     authController.protect,
     authController.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
     controller.onDelete
+  );
+
+router
+  .route('/:tourId/reviews')
+  .post(
+    authController.protect,
+    authController.restrictTo(K.ROLES.user),
+    reviewController.onAddReview
   );
 
 module.exports = router;

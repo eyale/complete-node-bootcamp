@@ -23,7 +23,16 @@ const onGetAll = H.catchAsync(async (req, res, next) => {
 });
 
 const onAddReview = H.catchAsync(async (req, res, next) => {
-  const { review, rating, tourId } = req.body;
+  // Allow nested routes
+  // if (!req.body.tour) {
+  //   req.body.tour = req.params.tourId;
+  // }
+  // if (!req.body.user) {
+  //   req.body.user = req.user.id;
+  // }
+  const { review, rating } = req.body;
+  const tourId = req.body.tourId || req.params.tourId;
+
   if (!review || !rating) {
     const error = new AppError(
       `There is no required data. "review": ${review}, rating: ${rating}`,
