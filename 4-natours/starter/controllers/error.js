@@ -96,8 +96,8 @@ const uncaughtException = err => {
 };
 
 const unhandledRejection = (server, err) => {
+  console.log('❌Unhandled rejection');
   console.log(`${err.name}: ${err.message}`);
-  console.log('🧨 Unhandled rejection');
 
   server.close(() => {
     process.exit(1);
