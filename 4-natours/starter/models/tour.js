@@ -6,8 +6,6 @@ const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
 
-// const User = require('./user');
-
 const nameMaxLength = 40;
 const nameMinLength = 10;
 const difficultyEnum = ['easy', 'medium', 'difficult'];
@@ -138,6 +136,7 @@ const tourSchema = new mongoose.Schema(
     guides: [{ type: mongoose.Schema.ObjectId, ref: 'User' }]
   },
   {
+    // needed to populate make work
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
   }
@@ -147,18 +146,18 @@ tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
 
+// Virtual populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id'
+});
+
 // DOCUMENT MIDDLEWARE/HOOK - runs before .save/.crete
 tourSchema.pre('save', function(next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
-
-// tourSchema.pre('save', async function(next) {
-//   const guidesPromises = this.guides.map(async id => await User.findById(id));
-
-//   this.guides = await Promise.all(guidesPromises);
-//   next();
-// });
 
 // tourSchema.pre('save', function(next) {
 //   console.log('....saving document');
@@ -202,6 +201,8 @@ tourSchema.pre('aggregate', function(next) {
   console.log('💰', this.pipeline());
   next();
 });
+
+delete mongoose.connection.models.Tour;
 
 const Tour = mongoose.model('Tour', tourSchema);
 

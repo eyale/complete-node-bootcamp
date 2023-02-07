@@ -32,12 +32,12 @@ const onUpdateUserInfo = H.catchAsync(async (req, res, next) => {
   // 1 - throw error if user POSTs password
   const { password, confirmPassword, ...rest } = req.body;
   if (password || confirmPassword) {
-    return next(
-      new AppError(
-        'password and confirmPassword are not allowed to update with this route. Use /updatePassword',
-        400
-      )
+    const error = new AppError(
+      'password and confirmPassword are not allowed to update with this route. Use /updatePassword',
+      400
     );
+
+    return next(error);
   }
   // 3 - filter request body properties
   const updateFieldsObject = filterBody(rest, 'name', 'email');
@@ -55,7 +55,7 @@ const onUpdateUserInfo = H.catchAsync(async (req, res, next) => {
   await updatedUser.save();
 
   res.status(200).json({
-    tatus: K.STATUS.success,
+    status: K.STATUS.success,
     data: {
       user: updatedUser
     }
@@ -63,7 +63,6 @@ const onUpdateUserInfo = H.catchAsync(async (req, res, next) => {
 });
 
 const onDeactivateUserAccount = H.catchAsync(async (req, res, next) => {
-  //
   await User.findByIdAndUpdate(req.user.id, { isActive: false });
 
   res.status(204).json({

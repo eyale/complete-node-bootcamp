@@ -39,7 +39,7 @@ const onGetAll = H.catchAsync(async (req, res, next) => {
 
 const onGet = H.catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  const tour = await Tour.findById(id);
+  const tour = await Tour.findById(id).populate('reviews');
 
   if (!tour) {
     return next(new AppError(`Tour not found by id: ${id}`, 404));

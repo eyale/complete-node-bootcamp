@@ -8,6 +8,7 @@ const K = require(`${__dirname}/misc/constants`);
 const H = require(`${__dirname}/misc/helpers`);
 const errorController = require(`${__dirname}/controllers/error`);
 const toursRouter = require(`${__dirname}/routes/tours`);
+const reviewsRouter = require(`${__dirname}/routes/reviews`);
 const usersRouter = require(`${__dirname}/routes/users`);
 
 const app = express();
@@ -30,6 +31,10 @@ H.applyMiddlewares(app);
  * TOURS
  */
 app.use(K.ROUTES.v1.tours, toursRouter);
+/**
+ * REVIEWS
+ */
+app.use(K.ROUTES.v1.reviews, reviewsRouter);
 /**
  * USERS
  */

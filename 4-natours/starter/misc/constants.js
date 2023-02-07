@@ -36,6 +36,7 @@ const ROLES = {
 const ROUTES = {
   v1: {
     tours: `/api/${API_VERSION.v1}/tours`,
+    reviews: `/api/${API_VERSION.v1}/reviews`,
     users: `/api/${API_VERSION.v1}/users`
   }
 };

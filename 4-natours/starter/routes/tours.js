@@ -1,8 +1,8 @@
 const express = require('express');
 
-const controller = require(`${__dirname}/../controllers/tours.js`);
-const authController = require(`${__dirname}/../controllers/auth.js`);
-// const H = require(`${__dirname}/../misc/helpers.js`);
+const controller = require(`${__dirname}/../controllers/tours`);
+const authController = require(`${__dirname}/../controllers/auth`);
+// const H = require(`${__dirname}/../misc/helpers`);
 const K = require(`${__dirname}/../misc/constants`);
 
 const router = express.Router();
