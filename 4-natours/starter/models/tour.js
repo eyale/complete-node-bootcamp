@@ -6,9 +6,24 @@ const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
 
+const User = require('./user');
+
 const nameMaxLength = 40;
 const nameMinLength = 10;
 const difficultyEnum = ['easy', 'medium', 'difficult'];
+const startLocationEnum = ['Point'];
+
+const startLocationSchema = new mongoose.Schema({
+  // GeoJSON
+  type: {
+    type: String,
+    default: 'Point',
+    enum: startLocationEnum
+  },
+  coordinates: [Number],
+  address: String,
+  description: String
+});
 
 const tourSchema = new mongoose.Schema(
   {
@@ -94,15 +109,37 @@ const tourSchema = new mongoose.Schema(
     secretTour: {
       type: Boolean,
       default: false
-    }
+    },
+    startLocation: startLocationSchema,
+    // startLocation: {
+    //   // GeoJSON
+    //   type: {
+    //     type: String,
+    //     default: 'Point',
+    //     enum: startLocationEnum
+    //   },
+    //   coordinates: [Number],
+    //   address: String,
+    //   description: String
+    // },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: startLocationEnum
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number
+      }
+    ],
+    guides: Array
   },
   {
-    toJSON: {
-      virtuals: true
-    },
-    toObject: {
-      virtuals: true
-    }
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
 
@@ -113,6 +150,13 @@ tourSchema.virtual('durationWeeks').get(function() {
 // DOCUMENT MIDDLEWARE/HOOK - runs before .save/.crete
 tourSchema.pre('save', function(next) {
   this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+tourSchema.pre('save', async function(next) {
+  const guidesPromises = this.guides.map(async id => await User.findById(id));
+
+  this.guides = await Promise.all(guidesPromises);
   next();
 });
 
