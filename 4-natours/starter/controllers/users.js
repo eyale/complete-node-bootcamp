@@ -66,6 +66,11 @@ const onAddNewUser = (_, res) => {
   });
 };
 
+const getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
+
 module.exports = {
   onGetAll: handlerFactory.getAll(User),
   onGet: handlerFactory.getOne(User),
@@ -74,5 +79,6 @@ module.exports = {
   onDelete: handlerFactory.deleteOne(User),
   onUpdateUserInfo: onUpdateUserInfo,
   onDeactivateUser: onDeactivateUserAccount,
-  onAddNew: onAddNewUser
+  onAddNew: onAddNewUser,
+  getMe
 };
