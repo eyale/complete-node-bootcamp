@@ -6,6 +6,7 @@
 const K = require(`${__dirname}/../misc/constants`);
 const H = require(`${__dirname}/../misc/helpers`);
 const AppError = require(`${__dirname}/../misc/appError`);
+const handlerFactory = require(`${__dirname}/handlerFactory`);
 
 const Review = require(`${__dirname}/../models/review`);
 const Tour = require(`${__dirname}/../models/Tour`);
@@ -97,4 +98,9 @@ const onUpdateReview = H.catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { onGetAll, onAddReview, onUpdateReview };
+module.exports = {
+  onGetAll,
+  onAddReview,
+  onUpdateReview,
+  onDelete: handlerFactory.deleteOne(Review)
+};

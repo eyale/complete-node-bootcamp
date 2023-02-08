@@ -8,6 +8,7 @@ const Tour = require(`${__dirname}/../models/tour`);
 const APIFeatures = require(`${__dirname}/../misc/apiFeatures`);
 const H = require(`${__dirname}/../misc/helpers`);
 const AppError = require(`${__dirname}/../misc/appError`);
+const handlerFactory = require(`${__dirname}/handlerFactory`);
 
 const topFiveCheap = (req, _, next) => {
   req.query.limit = 5;
@@ -85,21 +86,21 @@ const onEdit = H.catchAsync(async (req, res, next) => {
   });
 });
 
-const onDelete = H.catchAsync(async (req, res, next) => {
-  const {
-    params: { id }
-  } = req;
-  const tour = await Tour.findByIdAndDelete(id);
+// const onDelete = H.catchAsync(async (req, res, next) => {
+//   const {
+//     params: { id }
+//   } = req;
+//   const tour = await Tour.findByIdAndDelete(id);
 
-  if (!tour) {
-    return next(new AppError(`Tour not found by id: ${id}`, 404));
-  }
+//   if (!tour) {
+//     return next(new AppError(`Tour not found by id: ${id}`, 404));
+//   }
 
-  res.status(204).json({
-    status: K.STATUS.success,
-    data: null
-  });
-});
+//   res.status(204).json({
+//     status: K.STATUS.success,
+//     data: null
+//   });
+// });
 
 const getTourStats = H.catchAsync(async (_, res, next) => {
   const matchAggr = { $match: { ratingsAverage: { $gte: 4.5 } } };
@@ -190,7 +191,7 @@ module.exports = {
   onGet,
   onAddNew,
   onEdit,
-  onDelete,
+  onDelete: handlerFactory.deleteOne(Tour),
   getTourStats,
   getMonthlyPlan
 };

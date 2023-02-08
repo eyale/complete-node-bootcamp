@@ -19,4 +19,6 @@ router
   .route('/:tourId')
   .patch(authController.protect, reviewController.onUpdateReview);
 
+router.route('/:id').delete(authController.protect, reviewController.onDelete);
+
 module.exports = router;

@@ -1,6 +1,7 @@
 const K = require(`${__dirname}/../misc/constants`);
 const H = require(`${__dirname}/../misc/helpers`);
 const AppError = require(`${__dirname}/../misc/appError`);
+const handlerFactory = require(`${__dirname}/handlerFactory`);
 
 const User = require('../models/user');
 
@@ -91,19 +92,12 @@ const onEditUser = (req, res) => {
   });
 };
 
-const onDeleteUser = (req, res) => {
-  res.status(500).json({
-    status: K.STATUS.fail,
-    message: 'Route is under construction'
-  });
-};
-
 module.exports = {
   onGetAll: onGetAllUsers,
   onGet: onGetUser,
   onAddNew: onAddNewUser,
   onEdit: onEditUser,
-  onDelete: onDeleteUser,
+  onDelete: handlerFactory.deleteOne(User),
   onUpdateUserInfo: onUpdateUserInfo,
   onDeactivateUser: onDeactivateUserAccount
 };
