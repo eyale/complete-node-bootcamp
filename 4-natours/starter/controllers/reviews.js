@@ -11,7 +11,9 @@ const Review = require(`${__dirname}/../models/review`);
 const Tour = require(`${__dirname}/../models/Tour`);
 
 const onGetAll = H.catchAsync(async (req, res, next) => {
-  const reviews = await Review.find();
+  const filterOptions = req.params.tourId ? { tour: req.params.tourId } : {};
+
+  const reviews = await Review.find(filterOptions);
 
   res.status(200).json({
     status: K.STATUS.success,
