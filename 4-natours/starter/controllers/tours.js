@@ -5,9 +5,7 @@
 
 const K = require(`${__dirname}/../misc/constants`);
 const Tour = require(`${__dirname}/../models/tour`);
-const APIFeatures = require(`${__dirname}/../misc/apiFeatures`);
 const H = require(`${__dirname}/../misc/helpers`);
-const AppError = require(`${__dirname}/../misc/appError`);
 const handlerFactory = require(`${__dirname}/handlerFactory`);
 
 const topFiveCheap = (req, _, next) => {
@@ -17,42 +15,26 @@ const topFiveCheap = (req, _, next) => {
   next();
 };
 
-const onGetAll = H.catchAsync(async (req, res, next) => {
-  const count = await Tour.countDocuments();
-  // 5 EXECUTE query
-  const apiFeatures = new APIFeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .limitProperties()
-    .paginate();
-  const tours = await apiFeatures.query;
+// const onGetAll = H.catchAsync(async (req, res, next) => {
+//   const count = await Tour.countDocuments();
+//   // 5 EXECUTE query
+//   const apiFeatures = new APIFeatures(Tour.find(), req.query)
+//     .filter()
+//     .sort()
+//     .limitProperties()
+//     .paginate();
+//   const tours = await apiFeatures.query;
 
-  // 6 SEND response
-  res.status(200).json({
-    status: K.STATUS.success,
-    requestedAt: req.requestedAt,
-    data: {
-      count,
-      tours: tours
-    }
-  });
-});
-
-const onGet = H.catchAsync(async (req, res, next) => {
-  const { id } = req.params;
-  const tour = await Tour.findById(id).populate('reviews');
-
-  if (!tour) {
-    return next(new AppError(`Tour not found by id: ${id}`, 404));
-  }
-
-  res.status(200).json({
-    status: K.STATUS.success,
-    data: {
-      tour
-    }
-  });
-});
+//   // 6 SEND response
+//   res.status(200).json({
+//     status: K.STATUS.success,
+//     requestedAt: req.requestedAt,
+//     data: {
+//       count,
+//       tours: tours
+//     }
+//   });
+// });
 
 const getTourStats = H.catchAsync(async (_, res, next) => {
   const matchAggr = { $match: { ratingsAverage: { $gte: 4.5 } } };
@@ -139,11 +121,11 @@ const getMonthlyPlan = H.catchAsync(async (req, res, next) => {
 
 module.exports = {
   topFiveCheap,
-  onGetAll,
-  onGet,
+  getTourStats,
+  getMonthlyPlan,
+  onGetAll: handlerFactory.getAll(Tour),
+  onGet: handlerFactory.getOne(Tour, { path: 'reviews' }),
   onAddNew: handlerFactory.createOne(Tour),
   onEdit: handlerFactory.updateOne(Tour),
-  onDelete: handlerFactory.deleteOne(Tour),
-  getTourStats,
-  getMonthlyPlan
+  onDelete: handlerFactory.deleteOne(Tour)
 };

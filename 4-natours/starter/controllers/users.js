@@ -17,18 +17,6 @@ const filterBody = (body, ...allowedProperties) => {
   return newBody;
 };
 
-const onGetAllUsers = H.catchAsync(async (req, res) => {
-  const users = await User.find();
-
-  res.status(200).json({
-    status: K.STATUS.success,
-    count: users.length,
-    data: {
-      users
-    }
-  });
-});
-
 const onUpdateUserInfo = H.catchAsync(async (req, res, next) => {
   // 1 - throw error if user POSTs password
   const { password, confirmPassword, ...rest } = req.body;
@@ -71,27 +59,20 @@ const onDeactivateUserAccount = H.catchAsync(async (req, res, next) => {
   });
 });
 
-const onGetUser = (req, res) => {
+const onAddNewUser = (_, res) => {
   res.status(500).json({
     status: K.STATUS.fail,
-    message: 'Route is under construction'
-  });
-};
-
-const onAddNewUser = (req, res) => {
-  res.status(500).json({
-    status: K.STATUS.fail,
-    message: 'Route is under construction'
+    message: 'Route is not defined. Use /signup instead.'
   });
 };
 
 module.exports = {
-  onGetAll: onGetAllUsers,
-  onGet: onGetUser,
-  onAddNew: onAddNewUser,
+  onGetAll: handlerFactory.getAll(User),
+  onGet: handlerFactory.getOne(User),
   // will not update PASSWORD with `onEdit`
   onEdit: handlerFactory.updateOne(User),
   onDelete: handlerFactory.deleteOne(User),
   onUpdateUserInfo: onUpdateUserInfo,
-  onDeactivateUser: onDeactivateUserAccount
+  onDeactivateUser: onDeactivateUserAccount,
+  onAddNew: onAddNewUser
 };
