@@ -85,18 +85,12 @@ const onAddNewUser = (req, res) => {
   });
 };
 
-const onEditUser = (req, res) => {
-  res.status(500).json({
-    status: K.STATUS.fail,
-    message: 'Route is under construction'
-  });
-};
-
 module.exports = {
   onGetAll: onGetAllUsers,
   onGet: onGetUser,
   onAddNew: onAddNewUser,
-  onEdit: onEditUser,
+  // will not update PASSWORD with `onEdit`
+  onEdit: handlerFactory.updateOne(User),
   onDelete: handlerFactory.deleteOne(User),
   onUpdateUserInfo: onUpdateUserInfo,
   onDeactivateUser: onDeactivateUserAccount

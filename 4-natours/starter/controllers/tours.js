@@ -54,54 +54,6 @@ const onGet = H.catchAsync(async (req, res, next) => {
   });
 });
 
-const onAddNew = H.catchAsync(async (req, res, next) => {
-  const newItem = await Tour.create(req.body);
-
-  res.status(201).json({
-    status: K.STATUS.success,
-    data: {
-      tour: newItem
-    }
-  });
-});
-
-const onEdit = H.catchAsync(async (req, res, next) => {
-  const {
-    params: { id },
-    body: withContent
-  } = req;
-
-  const options = { new: true, runValidators: true };
-  const tour = await Tour.findByIdAndUpdate(id, withContent, options);
-
-  if (!tour) {
-    return next(new AppError(`Tour not found by id: ${id}`, 404));
-  }
-
-  res.status(200).json({
-    status: K.STATUS.success,
-    data: {
-      tour
-    }
-  });
-});
-
-// const onDelete = H.catchAsync(async (req, res, next) => {
-//   const {
-//     params: { id }
-//   } = req;
-//   const tour = await Tour.findByIdAndDelete(id);
-
-//   if (!tour) {
-//     return next(new AppError(`Tour not found by id: ${id}`, 404));
-//   }
-
-//   res.status(204).json({
-//     status: K.STATUS.success,
-//     data: null
-//   });
-// });
-
 const getTourStats = H.catchAsync(async (_, res, next) => {
   const matchAggr = { $match: { ratingsAverage: { $gte: 4.5 } } };
   const groupAggr = {
@@ -189,8 +141,8 @@ module.exports = {
   topFiveCheap,
   onGetAll,
   onGet,
-  onAddNew,
-  onEdit,
+  onAddNew: handlerFactory.createOne(Tour),
+  onEdit: handlerFactory.updateOne(Tour),
   onDelete: handlerFactory.deleteOne(Tour),
   getTourStats,
   getMonthlyPlan
