@@ -17,17 +17,31 @@ router.use('/:tourId/reviews', reviewRouter);
 router.route('/top-5-cheap').get(controller.topFiveCheap, controller.onGetAll);
 
 router.route('/tour-stats').get(controller.getTourStats);
-router.route('/monthly-plan/:year').get(controller.getMonthlyPlan);
+router
+  .route('/monthly-plan/:year')
+  .get(
+    authController.protect,
+    authController.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
+    controller.getMonthlyPlan
+  );
 
 router
   .route('/')
-  .get(authController.protect, controller.onGetAll)
-  .post(controller.onAddNew);
+  .get(controller.onGetAll)
+  .post(
+    authController.protect,
+    authController.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
+    controller.onAddNew
+  );
 
 router
   .route('/:id')
   .get(controller.onGet)
-  .patch(controller.onEdit)
+  .patch(
+    authController.protect,
+    authController.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
+    controller.onEdit
+  )
   .delete(
     authController.protect,
     authController.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),

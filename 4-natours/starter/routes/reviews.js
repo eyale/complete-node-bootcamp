@@ -6,11 +6,12 @@ const K = require(`${__dirname}/../misc/constants`);
 
 const router = express.Router({ mergeParams: true });
 
+router.use(authController.protect);
+
 router
   .route('/')
   .get(reviewController.onGetAll)
   .post(
-    authController.protect,
     authController.restrictTo(K.ROLES.user),
     reviewController.setTourAndUserIds,
     reviewController.onAddReview
@@ -18,8 +19,14 @@ router
 
 router
   .route('/:id')
-  .get(authController.protect, reviewController.onGetReview)
-  .patch(authController.protect, reviewController.onUpdateReview)
-  .delete(authController.protect, reviewController.onDelete);
+  .get(reviewController.onGetReview)
+  .patch(
+    authController.restrictTo(K.ROLES.user, K.ROLES.admin),
+    reviewController.onUpdateReview
+  )
+  .delete(
+    authController.restrictTo(K.ROLES.user, K.ROLES.admin),
+    reviewController.onDelete
+  );
 
 module.exports = router;

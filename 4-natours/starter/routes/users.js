@@ -3,6 +3,8 @@ const express = require('express');
 const userController = require(`${__dirname}/../controllers/users`);
 const authController = require(`${__dirname}/../controllers/auth`);
 
+const K = require(`${__dirname}/../misc/constants`);
+
 const router = express.Router();
 
 // router.use('id', H.checkId);
@@ -11,39 +13,30 @@ const router = express.Router();
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 
-router.get(
-  '/me',
-  authController.protect,
-  userController.getMe,
-  userController.onGet
-);
+// as far as authController.protect is middleware function
+// we are protecting all routes below
+router.use(authController.protect);
+
+router.get('/me', userController.getMe, userController.onGet);
 
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
-router.patch(
-  '/updatePassword',
-  authController.protect,
-  authController.updatePassword
-);
-router.patch(
-  '/updateUserInfo',
-  authController.protect,
-  userController.onUpdateUserInfo
-);
-router.delete(
-  '/deactivateUser',
-  authController.protect,
-  userController.onDeactivateUser
-);
+router.patch('/updatePassword', authController.updatePassword);
+router.patch('/updateUserInfo', userController.onUpdateUserInfo);
+router.delete('/deactivateUser', userController.onDeactivateUser);
+
+// as far as authController.restrictTo is middleware function
+// so admin only allowed to make API calls that below
+router.use(authController.restrictTo(K.ROLES.admin));
 
 router
   .route('/')
-  .get(authController.protect, userController.onGetAll)
+  .get(userController.onGetAll)
   .post(userController.onAddNew);
 
 router
   .route('/:id')
-  .get(authController.protect, userController.onGet)
+  .get(userController.onGet)
   .patch(userController.onEdit)
   .delete(userController.onDelete);
 

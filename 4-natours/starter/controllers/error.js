@@ -89,8 +89,8 @@ const errorMiddleware = (err, req, res, next) => {
 };
 
 const uncaughtException = err => {
+  console.log('\n🧨 Uncaught exception');
   console.log(`${err.name}: ${err.message}`);
-  console.log('🧨 Uncaught exception');
 
   process.exit(1);
 };
