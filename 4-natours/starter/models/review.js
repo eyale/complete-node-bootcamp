@@ -58,6 +58,8 @@ reviewSchema.pre(/^find/, function(next) {
   next();
 });
 
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 /**
  *
  * @param {ratingsQuantity} and @param {ratingsAverage}
