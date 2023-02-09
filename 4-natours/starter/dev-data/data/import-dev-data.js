@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
 const Tour = require(`${__dirname}/../../models/tour.js`);
+const Review = require(`${__dirname}/../../models/review.js`);
+const User = require(`${__dirname}/../../models/user.js`);
 
 const helpers = require(`${__dirname}/../../misc/helpers.js`);
 
@@ -29,15 +31,21 @@ mongoose
   .then(helpers.onMongooseConnect);
 
 // Read JSON file
-const tours = JSON.parse(
-  // fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
-  fs.readFileSync(`${__dirname}/tours.json`, 'utf-8')
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
+const reviews = JSON.parse(
+  fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8')
 );
+const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'));
 
 // import tours to DB
-const importToursToDB = async () => {
+const importToDB = async () => {
   try {
     await Tour.create(tours);
+    await Review.create(reviews);
+    console.log(
+      '❗️❗️❗️ comment PASSWORD ENCRYPTION at `/models/user.js` ❗️❗️❗️'
+    );
+    await User.create(users, { validateBeforeSave: false });
     console.log('✅SUCCESS: importToursToDB');
   } catch (error) {
     console.log(`❌importToursToDB err:\n${error}`);
@@ -49,6 +57,8 @@ const importToursToDB = async () => {
 const deleteAllData = async () => {
   try {
     await Tour.deleteMany();
+    await Review.deleteMany();
+    await User.deleteMany();
     console.log('✅SUCCESS: deleteAllData');
   } catch (error) {
     console.log('❌deleteAllData err:\n', error);
@@ -57,7 +67,7 @@ const deleteAllData = async () => {
 };
 
 if (process.argv[2] === ARGV.import) {
-  importToursToDB();
+  importToDB();
 }
 if (process.argv[2] === ARGV.delete) {
   deleteAllData();

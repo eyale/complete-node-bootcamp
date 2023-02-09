@@ -83,6 +83,11 @@ userSchema.pre(/^find/, function(next) {
   next();
 });
 
+// ******************************************************************
+/**
+ * comment PASSWORD ENCRYPTION
+ * before uploading data to DB with script
+ * */
 userSchema.pre('save', function(next) {
   if (!this.isModified('password') || this.isNew) {
     return next();
@@ -102,6 +107,7 @@ userSchema.pre('save', async function(next) {
 
   next();
 });
+// ******************************************************************
 
 userSchema.methods.checkIsPasswordMatched = async function(
   passwordToCheck,
