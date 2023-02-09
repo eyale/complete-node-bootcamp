@@ -142,6 +142,13 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+/**
+ *
+ *  INDEXES - for fast query
+ */
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
@@ -158,11 +165,6 @@ tourSchema.pre('save', function(next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
-
-// tourSchema.pre('save', function(next) {
-//   console.log('....saving document');
-//   next();
-// });
 
 // tourSchema.post('save', function(doc, next) {
 //   console.log('❗ >\n doc', doc);
