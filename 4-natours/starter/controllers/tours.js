@@ -4,9 +4,11 @@
  */
 
 const K = require(`${__dirname}/../misc/constants`);
-const Tour = require(`${__dirname}/../models/tour`);
 const H = require(`${__dirname}/../misc/helpers`);
 const handlerFactory = require(`${__dirname}/handlerFactory`);
+const AppError = require(`${__dirname}/../misc/appError`);
+
+const Tour = require(`${__dirname}/../models/tour`);
 
 const topFiveCheap = (req, _, next) => {
   req.query.limit = 5;
@@ -119,10 +121,51 @@ const getMonthlyPlan = H.catchAsync(async (req, res, next) => {
   });
 });
 
+const getRadiusRadiance = (unit, distance) => {
+  return unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+};
+
+const getToursWithin = H.catchAsync(async (req, res, next) => {
+  // '/tours-within/:distance/center/:latlng/unit/:unit',
+  // '/tours-within/:233/center/-30,55/unit/mi',
+
+  const { distance, latlng, unit } = req.params;
+  console.log('🤖  distance, unit, latlng', distance, unit, latlng);
+
+  const [lat, lng] = latlng.split(',');
+  if (!lat || !lng) {
+    return next(
+      new AppError(
+        `Server should receive coordinates lat: ${lat}, lng: ${lng}`,
+        400
+      )
+    );
+  }
+
+  const radius = getRadiusRadiance(unit, distance);
+  // https://www.mongodb.com/docs/manual/reference/operator/query/geoWithin/#mongodb-query-op.-geoWithin
+  const findOptions = {
+    startLocation: {
+      $geoWithin: { $centerSphere: [[lng, lat], radius] }
+    }
+  };
+
+  const tours = await Tour.find(findOptions);
+
+  res.status(200).json({
+    status: K.STATUS.success,
+    count: tours.length,
+    data: {
+      tours
+    }
+  });
+});
+
 module.exports = {
   topFiveCheap,
   getTourStats,
   getMonthlyPlan,
+  getToursWithin,
   onGetAll: handlerFactory.getAll(Tour),
   onGet: handlerFactory.getOne(Tour, { path: 'reviews' }),
   onAddNew: handlerFactory.createOne(Tour),

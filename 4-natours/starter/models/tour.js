@@ -146,9 +146,11 @@ const tourSchema = new mongoose.Schema(
 /**
  *
  *  INDEXES - for fast query
+ * https://www.mongodb.com/docs/manual/indexes/
  */
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
