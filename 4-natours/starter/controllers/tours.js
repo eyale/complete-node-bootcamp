@@ -126,12 +126,7 @@ const getRadiusRadiance = (unit, distance) => {
 };
 
 const getToursWithin = H.catchAsync(async (req, res, next) => {
-  // '/tours-within/:distance/center/:latlng/unit/:unit',
-  // '/tours-within/:233/center/-30,55/unit/mi',
-
   const { distance, latlng, unit } = req.params;
-  console.log('🤖  distance, unit, latlng', distance, unit, latlng);
-
   const [lat, lng] = latlng.split(',');
   if (!lat || !lng) {
     return next(
@@ -161,11 +156,55 @@ const getToursWithin = H.catchAsync(async (req, res, next) => {
   });
 });
 
+const getDistances = H.catchAsync(async (req, res, next) => {
+  // {{URL}}/api/v1/tours/distances/:latlng/unit/:unit
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+  if (!lat || !lng) {
+    return next(
+      new AppError(
+        `Server should receive coordinates lat: ${lat}, lng: ${lng}`,
+        400
+      )
+    );
+  }
+
+  const multiplier = unit === 'mi' ? 0.00062137 : 0.001;
+
+  const geoOpt = {
+    $geoNear: {
+      near: {
+        type: 'Point',
+        coordinates: [lng * 1, lat * 1]
+      },
+      distanceField: 'distance',
+      distanceMultiplier: multiplier
+    }
+  };
+  const keepOnlyDistanceOpt = {
+    $project: {
+      distance: 1,
+      name: 1
+    }
+  };
+
+  const distances = await Tour.aggregate([geoOpt, keepOnlyDistanceOpt]);
+
+  res.status(200).json({
+    status: K.STATUS.success,
+    count: distances.length,
+    data: {
+      distances
+    }
+  });
+});
+
 module.exports = {
   topFiveCheap,
   getTourStats,
   getMonthlyPlan,
   getToursWithin,
+  getDistances,
   onGetAll: handlerFactory.getAll(Tour),
   onGet: handlerFactory.getOne(Tour, { path: 'reviews' }),
   onAddNew: handlerFactory.createOne(Tour),

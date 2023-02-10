@@ -203,6 +203,14 @@ tourSchema.pre('aggregate', function(next) {
     $match: { secretTour: { $ne: true } }
   };
   this.pipeline().unshift(aggregationExcludeSecretTour);
+
+  const geoNearOpt = this.pipeline().find(el => el.$geoNear);
+
+  if (geoNearOpt) {
+    const index = this.pipeline().findIndex(el => el.$geoNear);
+    this.pipeline().splice(index, index);
+    this.pipeline().unshift(geoNearOpt);
+  }
   console.log('💰', this.pipeline());
   next();
 });
