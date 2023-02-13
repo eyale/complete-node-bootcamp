@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -14,6 +15,8 @@ const usersRouter = require(`${__dirname}/routes/users`);
 const app = express();
 
 // middleware
+// Data sanitization against NoSQL query injection
+// Data sanitization against XSS
 app.use(helmet());
 app.use('/api', H.limiter);
 app.use(mongoSanitize());
@@ -25,8 +28,20 @@ app.use(
 );
 H.applyMiddlewares(app);
 
-// Data sanitization against NoSQL query injection
-// Data sanitization against XSS
+// setup template engine
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+/**
+ * ROUTES
+ */
+app.get('/', (req, res) => {
+  res.status(200).render('base', {
+    tour: 'The Forest Hiker',
+    user: 'Kuka'
+  });
+});
+
 /**
  * TOURS
  */

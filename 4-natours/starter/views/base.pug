@@ -1,0 +1,17 @@
+doctype html
+html
+  head 
+    title Natours | #{tour}
+    link(rel='stylesheet' href='css/style.css')
+    link(rel='shortcut icon' type='image/png' href='img/favicon.png')
+
+body
+  h1= tour
+  h1= user.toUpperCase()
+  //- h1 New BIG Pug title
+
+  - const x = 9;
+
+  h2= x*123
+
+  p TEST paragraph

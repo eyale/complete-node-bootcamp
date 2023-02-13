@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -48,7 +49,11 @@ const applyMiddlewares = app => {
     app.use(morgan('dev'));
   }
   app.use(express.json({ limit: '10kb' }));
-  app.use(express.static(`${__dirname}/../public`));
+
+  // this will define static files from
+  // folder `./public`
+  app.use(express.static(path.join(__dirname, '../public')));
+  console.log('🤖  path.join()', path.join(__dirname, '../public'));
   app.use(addRequestedAtToParams);
 };
 
