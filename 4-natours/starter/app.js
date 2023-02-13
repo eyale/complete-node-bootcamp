@@ -11,6 +11,7 @@ const errorController = require(`${__dirname}/controllers/error`);
 const toursRouter = require(`${__dirname}/routes/tours`);
 const reviewsRouter = require(`${__dirname}/routes/reviews`);
 const usersRouter = require(`${__dirname}/routes/users`);
+const viewRouter = require(`${__dirname}/routes/viewRoutes`);
 
 const app = express();
 
@@ -35,12 +36,7 @@ app.set('views', path.join(__dirname, 'views'));
 /**
  * ROUTES
  */
-app.get('/', (req, res) => {
-  res.status(200).render('base', {
-    tour: 'The Forest Hiker',
-    user: 'Kuka'
-  });
-});
+app.use(K.ROUTES.root, viewRouter);
 
 /**
  * TOURS
