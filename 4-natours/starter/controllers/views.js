@@ -24,13 +24,9 @@ exports.getTour = H.catchAsync(async (req, res) => {
     path: 'reviews',
     fields: 'review, rating, user'
   });
-  console.log('🤖  tour', tour, '\n');
-  // req the tour - along with reviews and tourguides
-  // build template
-  // render template using data
 
   res.status(200).render('tour', {
-    title: 'The Forest Hiker Tour',
+    title: tour.name,
     data: { tour }
   });
 });

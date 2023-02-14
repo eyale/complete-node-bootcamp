@@ -18,7 +18,9 @@ const app = express();
 // middleware
 // Data sanitization against NoSQL query injection
 // Data sanitization against XSS
-app.use(helmet());
+if (process.env.NODE_ENV === 'production') {
+  app.use(helmet());
+}
 app.use('/api', H.limiter);
 app.use(mongoSanitize());
 app.use(xss());
