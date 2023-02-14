@@ -6,12 +6,14 @@ window.addEventListener('load', () => {
   );
 
   // mapboxgl.accessToken = process.env.MAPBOX_ACCESS_TOKEN;
+  mapboxgl.accessToken =
+    'pk.eyJ1Ijoia29va2FoIiwiYSI6ImNsZTQ2cHdoaDAwM24zd3FzaGhzbTNybG8ifQ.QHfnRbcg5ZrzPSazLbhFtw';
 
   const map = new mapboxgl.Map({
     container: 'map',
-    // style: 'mapbox://styles/kookah/cle485wf2001601qm8ubnpeqx', // dark
     style: 'mapbox://styles/kookah/cle48cb5s001a01qg7pqql564', // light
     scrollZoom: false
+    // style: 'mapbox://styles/kookah/cle485wf2001601qm8ubnpeqx', // dark
     // center: [-118.1134, 34.111],
     // interactive: false
   });

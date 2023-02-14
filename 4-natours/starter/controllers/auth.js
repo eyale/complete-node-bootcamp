@@ -84,12 +84,17 @@ const login = H.catchAsync(async (req, res, next) => {
 const protect = H.catchAsync(async (req, res, next) => {
   let token;
   // 1 - is token exists
-  const isToken =
+  const isTokenFromHeaders =
     req.headers.authorization && req.headers.authorization.startsWith('Bearer');
 
-  if (isToken) {
+  if (isTokenFromHeaders) {
     token = req.headers.authorization.split(' ')[1];
   }
+
+  if (req.cookies.jwt) {
+    token = req.cookies.jwt;
+  }
+
   if (!token) {
     return next(new AppError(`Not authorized`, 401));
   }

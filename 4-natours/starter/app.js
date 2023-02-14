@@ -31,6 +31,11 @@ app.use(
 );
 H.applyMiddlewares(app);
 
+app.use((req, res, next) => {
+  console.log('🤖  cookies', req.cookies);
+  next();
+});
+
 // setup template engine
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));

@@ -30,3 +30,9 @@ exports.getTour = H.catchAsync(async (req, res) => {
     data: { tour }
   });
 });
+
+exports.login = H.catchAsync(async (req, res) => {
+  res.status(200).render('login', {
+    title: 'Login'
+  });
+});
