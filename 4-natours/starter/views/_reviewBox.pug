@@ -1,0 +1,10 @@
+mixin reviewBox(item)
+  .reviews__card
+    .reviews__avatar
+      img.reviews__avatar-img(src=`/img/users/${item.user.photo}`, alt=`${item.user.name}`)
+      h6.reviews__user #{item.user.name}
+    p.reviews__text #{item.review}
+    .reviews__rating
+      each star in [1,2,3,4,5]
+        svg.reviews__star(class=`reviews__star--${item.rating >= star ? 'active': 'inactive'}`)
+          use(xlink:href='/img/icons.svg#icon-star')

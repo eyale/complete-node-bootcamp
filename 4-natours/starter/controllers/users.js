@@ -1,3 +1,8 @@
+/**
+ *
+ * CONTROLLER Users
+ */
+
 const K = require(`${__dirname}/../misc/constants`);
 const H = require(`${__dirname}/../misc/helpers`);
 const AppError = require(`${__dirname}/../misc/appError`);
