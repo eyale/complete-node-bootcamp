@@ -5,9 +5,7 @@ window.addEventListener('load', () => {
     document.getElementById('map').dataset.locations
   );
 
-  // mapboxgl.accessToken = process.env.MAPBOX_ACCESS_TOKEN;
-  mapboxgl.accessToken =
-    'pk.eyJ1Ijoia29va2FoIiwiYSI6ImNsZTQ2cHdoaDAwM24zd3FzaGhzbTNybG8ifQ.QHfnRbcg5ZrzPSazLbhFtw';
+  mapboxgl.accessToken = document.getElementById('token').dataset.token;
 
   const map = new mapboxgl.Map({
     container: 'map',

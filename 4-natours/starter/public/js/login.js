@@ -8,6 +8,7 @@ const login = async (email, password) => {
       data: { email, password }
     });
     console.log('🪬', res);
+    window.location.assign('/');
   } catch (error) {
     console.log('❗️  error', error.response.data);
   }

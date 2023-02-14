@@ -120,6 +120,30 @@ const protect = H.catchAsync(async (req, res, next) => {
   next();
 });
 
+// only for rendered pages
+const handleLoggedUser = H.catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt) {
+    const dataFromDecodedToken = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET
+    );
+
+    // 3 - is user exist
+    const user = await User.findById(dataFromDecodedToken.id);
+    if (!user) {
+      next();
+    }
+    // 4 - is password not changed
+    if (user.checkIsPassChangedAfterTokenReceived(dataFromDecodedToken.iat)) {
+      next();
+    }
+    res.locals.user = user;
+    return next();
+  }
+  res.locals.MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
+  next();
+});
+
 const restrictTo = (...roles) => (req, res, next) => {
   if (!roles.includes(req.user.role)) {
     return next(new AppError(`Not Permitted for: ${req.user.role}`), 403);
@@ -255,5 +279,6 @@ module.exports = {
   forgotPassword,
   resetPassword,
   updatePassword,
-  login
+  login,
+  handleLoggedUser
 };
