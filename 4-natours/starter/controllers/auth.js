@@ -62,6 +62,18 @@ const signup = H.catchAsync(async (req, res, next) => {
   createAndSendToken(newUser, 201, res);
 });
 
+const logout = H.catchAsync(async (req, res, next) => {
+  res.cookie('jwt', '', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  });
+
+  res.status(200).json({
+    status: K.STATUS.success,
+    data: {}
+  });
+});
+
 const login = H.catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -124,22 +136,26 @@ const protect = H.catchAsync(async (req, res, next) => {
 const handleLoggedUser = H.catchAsync(async (req, res, next) => {
   res.locals.MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
   if (req.cookies.jwt) {
-    const dataFromDecodedToken = await promisify(jwt.verify)(
-      req.cookies.jwt,
-      process.env.JWT_SECRET
-    );
+    try {
+      const dataFromDecodedToken = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
 
-    // 3 - is user exist
-    const user = await User.findById(dataFromDecodedToken.id);
-    if (!user) {
-      next();
+      // 3 - is user exist
+      const user = await User.findById(dataFromDecodedToken.id);
+      if (!user) {
+        next();
+      }
+      // 4 - is password not changed
+      if (user.checkIsPassChangedAfterTokenReceived(dataFromDecodedToken.iat)) {
+        next();
+      }
+      res.locals.user = user;
+      return next();
+    } catch (error) {
+      return next();
     }
-    // 4 - is password not changed
-    if (user.checkIsPassChangedAfterTokenReceived(dataFromDecodedToken.iat)) {
-      next();
-    }
-    res.locals.user = user;
-    return next();
   }
   next();
 });
@@ -280,5 +296,6 @@ module.exports = {
   resetPassword,
   updatePassword,
   login,
+  logout,
   handleLoggedUser
 };

@@ -12395,7 +12395,7 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.logout = exports.login = void 0;
 
 var _axios = _interopRequireDefault(require("axios"));
 
@@ -12460,8 +12460,58 @@ function () {
   };
 }();
 
-var _default = login;
-exports.default = _default;
+exports.login = login;
+
+var logout =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(
+  /*#__PURE__*/
+  _regeneratorRuntime().mark(function _callee2() {
+    var res;
+    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      while (1) switch (_context2.prev = _context2.next) {
+        case 0:
+          _context2.prev = 0;
+          _context2.next = 3;
+          return (0, _axios.default)({
+            method: 'GET',
+            url: 'http://localhost:8000/api/v1/users/logout'
+          });
+
+        case 3:
+          res = _context2.sent;
+          console.log('🪬', res);
+
+          if (res.data.status === 'success') {
+            window.location.reload(true);
+            window.setTimeout(function () {
+              window.location.assign('/');
+            }, 400);
+          }
+
+          _context2.next = 12;
+          break;
+
+        case 8:
+          _context2.prev = 8;
+          _context2.t0 = _context2["catch"](0);
+          (0, _alerts.default)('error', _context2.t0);
+          console.log('😞  error', _context2.t0);
+
+        case 12:
+        case "end":
+          return _context2.stop();
+      }
+    }, _callee2, null, [[0, 8]]);
+  }));
+
+  return function logout() {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+exports.logout = logout;
 },{"axios":"../../node_modules/axios/index.js","./alerts":"alerts.js"}],"../../node_modules/mapbox-gl/dist/mapbox-gl.js":[function(require,module,exports) {
 var define;
 var global = arguments[3];
@@ -48005,7 +48055,7 @@ require("core-js/modules/web.dom.iterable");
 
 require("regenerator-runtime/runtime");
 
-var _login = _interopRequireDefault(require("./login"));
+var _login = require("./login");
 
 var _mapbox = _interopRequireDefault(require("./mapbox"));
 
@@ -48019,8 +48069,13 @@ window.addEventListener('load', function () {
       e.preventDefault();
       var email = document.getElementById('email').value;
       var password = document.getElementById('password').value;
-      (0, _login.default)(email, password);
+      (0, _login.login)(email, password);
     });
+  } // LOGOUT
+
+
+  if (document.querySelector('.nav__el--logout')) {
+    document.querySelector('.nav__el--logout').addEventListener('click', _login.logout);
   } // MAPBOX
 
 

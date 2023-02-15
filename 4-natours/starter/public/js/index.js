@@ -1,7 +1,8 @@
 /* eslint-disable no-undef */
 import '@babel/polyfill';
-import login from './login';
+import { login, logout } from './login';
 import mapBoxInit from './mapbox';
+
 console.log('📦 parcel is watching...\n');
 
 window.addEventListener('load', () => {
@@ -13,6 +14,13 @@ window.addEventListener('load', () => {
       const password = document.getElementById('password').value;
       login(email, password);
     });
+  }
+
+  // LOGOUT
+  if (document.querySelector('.nav__el--logout')) {
+    document
+      .querySelector('.nav__el--logout')
+      .addEventListener('click', logout);
   }
   // MAPBOX
   if (document.getElementById('map')) {

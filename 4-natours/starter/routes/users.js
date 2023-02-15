@@ -12,6 +12,7 @@ const router = express.Router();
 // always CHECK METHOD
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
+router.get('/logout', authController.logout);
 
 // as far as authController.protect is middleware function
 // we are protecting all routes below
