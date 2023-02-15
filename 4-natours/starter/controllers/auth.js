@@ -122,6 +122,7 @@ const protect = H.catchAsync(async (req, res, next) => {
 
 // only for rendered pages
 const handleLoggedUser = H.catchAsync(async (req, res, next) => {
+  res.locals.MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
   if (req.cookies.jwt) {
     const dataFromDecodedToken = await promisify(jwt.verify)(
       req.cookies.jwt,
@@ -140,7 +141,6 @@ const handleLoggedUser = H.catchAsync(async (req, res, next) => {
     res.locals.user = user;
     return next();
   }
-  res.locals.MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
   next();
 });
 

@@ -15,6 +15,13 @@
     "class-methods-use-this": "off",
     "import/no-dynamic-require": "off",
     "prefer-destructuring": ["error", { "object": true, "array": false }],
-    "no-unused-vars": ["error", { "argsIgnorePattern": "req|res|next|val|_" }]
+    "no-unused-vars": ["error", { "argsIgnorePattern": "req|res|next|val|_" }],
+    "node/no-unsupported-features/es-syntax": [
+      "error",
+      {
+        "version": ">=13.0.0",
+        "ignores": ["modules"]
+      }
+    ]
   }
 }

@@ -1,10 +1,7 @@
 /* eslint-disable no-undef */
+import mapboxgl from 'mapbox-gl';
 
-window.addEventListener('load', () => {
-  const locations = JSON.parse(
-    document.getElementById('map').dataset.locations
-  );
-
+const mapBoxInit = locations => {
   mapboxgl.accessToken = document.getElementById('token').dataset.token;
 
   const map = new mapboxgl.Map({
@@ -41,4 +38,6 @@ window.addEventListener('load', () => {
       right: 200
     }
   });
-});
+};
+
+export default mapBoxInit;

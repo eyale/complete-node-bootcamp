@@ -1,4 +1,6 @@
 /* eslint-disable no-undef */
+import axios from 'axios';
+import showAlert from './alerts';
 
 const login = async (email, password) => {
   try {
@@ -8,17 +10,14 @@ const login = async (email, password) => {
       data: { email, password }
     });
     console.log('🪬', res);
-    window.location.assign('/');
+    showAlert('success', `🎉 ${email} logged in.`);
+    window.setTimeout(() => {
+      window.location.assign('/');
+    }, 1500);
   } catch (error) {
+    showAlert('error', error.response.data.message);
     console.log('❗️  error', error.response.data);
   }
 };
 
-window.addEventListener('load', () => {
-  document.querySelector('.form').addEventListener('submit', e => {
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    login(email, password);
-  });
-});
+export default login;

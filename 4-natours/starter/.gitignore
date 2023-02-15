@@ -64,3 +64,6 @@ buck-out/
 
 .env
 config.env
+
+# parcel cache
+.cache
