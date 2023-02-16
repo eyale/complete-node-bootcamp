@@ -6,6 +6,8 @@
 const Tour = require('../models/tour');
 const H = require('../misc/helpers');
 
+const AppError = require(`${__dirname}/../misc/appError`);
+
 exports.getOverview = H.catchAsync(async (req, res) => {
   // get data from collection
   const tours = await Tour.find();
@@ -18,12 +20,16 @@ exports.getOverview = H.catchAsync(async (req, res) => {
   });
 });
 
-exports.getTour = H.catchAsync(async (req, res) => {
+exports.getTour = H.catchAsync(async (req, res, next) => {
   const { slug } = req.params;
   const tour = await Tour.findOne({ slug }).populate({
     path: 'reviews',
     fields: 'review, rating, user'
   });
+
+  if (!tour) {
+    return next(new AppError('Tour not found', 404));
+  }
 
   res.status(200).render('tour', {
     title: tour.name,

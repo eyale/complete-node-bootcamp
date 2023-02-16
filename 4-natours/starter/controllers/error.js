@@ -7,31 +7,56 @@ const handleNotFoundRequest = (req, res, next) => {
   next(new AppError(`${req.method} ${req.originalUrl} not found`, 404));
 };
 
-const sendErrorDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-    stack: err.stack,
-    error: err
+const sendErrorDev = (err, req, res) => {
+  if (req.originalUrl.startsWith('/api')) {
+    return res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+      stack: err.stack,
+      error: err
+    });
+  }
+  // Unknown error
+  console.error('🧨 ERROR', err);
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong',
+    message: err.message
   });
 };
 
-const sendErrorProd = (err, res) => {
+const sendErrorProd = (err, req, res) => {
   // Operational error - trusted error
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message
-    });
-  } else {
+  // API ERRORS
+  if (req.originalUrl.startsWith('/api')) {
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message
+      });
+    }
     // Unknown error
-    console.error('❗ ERROR', err);
+    console.error('🧨 ERROR', err);
 
-    res.status(err.statusCode).json({
+    return res.status(err.statusCode).json({
       status: K.STATUS.error,
       message: 'Something went wrong 🤕'
     });
   }
+
+  // VIEWS ERRORS (like page not found)
+  if (err.isOperational) {
+    return res.status(err.statusCode).render('error', {
+      title: 'Something went wrong',
+      message: err.message
+    });
+  }
+  // Unknown error
+  console.error('🧨 ERROR', err);
+
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong',
+    message: 'Try again later'
+  });
 };
 
 const handleCastErrorDB = err => {
@@ -65,7 +90,7 @@ const errorMiddleware = (err, req, res, next) => {
   err.status = err.status || K.STATUS.error;
 
   if (process.env.NODE_ENV === 'development') {
-    sendErrorDev(err, res);
+    sendErrorDev(err, req, res);
   } else {
     let error = Object.assign(err);
 
@@ -84,7 +109,7 @@ const errorMiddleware = (err, req, res, next) => {
     if (error.name === K.ERROR_TYPE.tokenExpiredError) {
       error = handleJWTExpireError(req.headers.authorization.split(' ')[1]);
     }
-    sendErrorProd(error, res);
+    sendErrorProd(error, req, res);
   }
 };
 
