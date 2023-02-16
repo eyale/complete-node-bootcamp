@@ -42,3 +42,9 @@ exports.login = H.catchAsync(async (req, res) => {
     title: 'Login'
   });
 });
+
+exports.me = H.catchAsync(async (req, res) => {
+  res.status(200).render('account', {
+    title: 'Me'
+  });
+});

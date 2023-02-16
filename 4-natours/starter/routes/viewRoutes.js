@@ -1,14 +1,13 @@
 const express = require('express');
 
-const viewController = require(`${__dirname}/../controllers/views`);
-const authController = require(`${__dirname}/../controllers/auth`);
+const viewC = require(`${__dirname}/../controllers/views`);
+const authC = require(`${__dirname}/../controllers/auth`);
 
 const router = express.Router();
 
-router.use(authController.handleLoggedUser);
-
-router.get('/', viewController.getOverview);
-router.get('/tour/:slug', viewController.getTour);
-router.get('/login', viewController.login);
+router.get('/', authC.handleLoggedUser, viewC.getOverview);
+router.get('/tour/:slug', authC.handleLoggedUser, viewC.getTour);
+router.get('/login', authC.handleLoggedUser, viewC.login);
+router.get('/me', authC.protect, viewC.me);
 
 module.exports = router;

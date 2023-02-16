@@ -1,7 +1,7 @@
 const express = require('express');
 
-const controller = require(`${__dirname}/../controllers/tours`);
-const authController = require(`${__dirname}/../controllers/auth`);
+const toursC = require(`${__dirname}/../controllers/tours`);
+const authC = require(`${__dirname}/../controllers/auth`);
 
 const reviewRouter = require(`${__dirname}/reviews`);
 
@@ -14,44 +14,44 @@ const router = express.Router();
 // mounting router
 router.use('/:tourId/reviews', reviewRouter);
 
-router.route('/top-5-cheap').get(controller.topFiveCheap, controller.onGetAll);
+router.route('/top-5-cheap').get(toursC.topFiveCheap, toursC.onGetAll);
 
-router.route('/tour-stats').get(controller.getTourStats);
+router.route('/tour-stats').get(toursC.getTourStats);
 router
   .route('/monthly-plan/:year')
   .get(
-    authController.protect,
-    authController.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
-    controller.getMonthlyPlan
+    authC.protect,
+    authC.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
+    toursC.getMonthlyPlan
   );
 
 router
   .route('/tours-within/:distance/center/:latlng/unit/:unit')
-  .get(controller.getToursWithin);
+  .get(toursC.getToursWithin);
 
-router.route('/distances/:latlng/unit/:unit').get(controller.getDistances);
+router.route('/distances/:latlng/unit/:unit').get(toursC.getDistances);
 
 router
   .route('/')
-  .get(controller.onGetAll)
+  .get(toursC.onGetAll)
   .post(
-    authController.protect,
-    authController.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
-    controller.onAddNew
+    authC.protect,
+    authC.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
+    toursC.onAddNew
   );
 
 router
   .route('/:id')
-  .get(controller.onGet)
+  .get(toursC.onGet)
   .patch(
-    authController.protect,
-    authController.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
-    controller.onEdit
+    authC.protect,
+    authC.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
+    toursC.onEdit
   )
   .delete(
-    authController.protect,
-    authController.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
-    controller.onDelete
+    authC.protect,
+    authC.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
+    toursC.onDelete
   );
 
 module.exports = router;

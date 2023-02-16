@@ -129,6 +129,7 @@ const protect = H.catchAsync(async (req, res, next) => {
   // GRANT ACCESS TO PROTECTED ROUTE
   // user will go to `restrictTo` middleware
   req.user = user;
+  res.locals.user = user;
   next();
 });
 
