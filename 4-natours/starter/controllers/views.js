@@ -4,6 +4,7 @@
  */
 
 const Tour = require('../models/tour');
+const User = require('../models/user');
 const H = require('../misc/helpers');
 
 const AppError = require(`${__dirname}/../misc/appError`);
@@ -47,4 +48,23 @@ exports.me = H.catchAsync(async (req, res) => {
   res.status(200).render('account', {
     title: 'Me'
   });
+});
+
+exports.updateUserData = H.catchAsync(async (req, res, next) => {
+  const { id } = req.user;
+  const { name, email } = req.body;
+  console.log('🤷🏻‍♂️🤷🏻‍♂️🤷🏻‍♂️🤷🏻‍♂️🤷🏻‍♂️🤷🏻‍♂️🤷🏻‍♂️🤷🏻‍♂️🤷🏻‍♂️\n\n\n');
+  console.log(req.body, req.user);
+
+  const user = await User.findByIdAndUpdate(
+    id,
+    { name, email },
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).render('account', {
+    title: 'User',
+    user
+  });
+  next();
 });

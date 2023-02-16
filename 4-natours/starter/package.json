@@ -10,7 +10,7 @@
     "delete:data": "node ./dev-data/data/import-dev-data.js --delete",
     "start:prod": "NODE_ENV=production nodemon server.js",
     "debug": "ndb server.js",
-    "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js  --out-file bundle.js",
+    "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --public-url /js --out-file bundle.js",
     "build:js": "parcel watch ./public/js/index.js --out-dir ./public/js  --out-file bundle.js"
   },
   "author": "Honcharov Anton",

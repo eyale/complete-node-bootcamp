@@ -257,17 +257,12 @@ const resetPassword = H.catchAsync(async (req, res, next) => {
 
 const updatePassword = H.catchAsync(async (req, res, next) => {
   const { password, passwordNew, confirmNewPassword } = req.body;
-  const { authorization } = req.headers;
-
-  let token;
-  const isToken = authorization && authorization.startsWith('Bearer');
-
-  if (isToken) {
-    token = authorization.split(' ')[1];
-  }
-  if (!token) {
-    return next(new AppError(`Not authorized`, 401));
-  }
+  console.log(
+    '🤖  password, passwordNew, confirmNewPassword',
+    password,
+    passwordNew,
+    confirmNewPassword
+  );
 
   // 3 - is user exist
   const user = await User.findById(req.user.id).select('+password');

@@ -32,7 +32,7 @@ app.use(
 H.applyMiddlewares(app);
 
 app.use((req, res, next) => {
-  console.log('🤖  cookies', req.cookies);
+  // console.log('🤖  cookies', req.cookies);
   next();
 });
 

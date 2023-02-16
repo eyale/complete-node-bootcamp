@@ -1,5 +1,7 @@
 # Node JS application
 
+Built using modern technologies: node.js, express, mongoDB.
+
 1. run node
 
 ```
