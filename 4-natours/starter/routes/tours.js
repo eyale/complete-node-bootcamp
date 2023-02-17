@@ -46,6 +46,8 @@ router
   .patch(
     authC.protect,
     authC.restrictTo(K.ROLES.admin, K.ROLES.leadGuide),
+    toursC.uploadTourImages,
+    toursC.resizeTourImages,
     toursC.onEdit
   )
   .delete(

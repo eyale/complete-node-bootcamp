@@ -12,8 +12,9 @@ const handlerFactory = require(`${__dirname}/handlerFactory`);
 
 const User = require('../models/user');
 
-const filePathForPhotos = 'public/img/users';
+// ********************* UPLOAD IMAGE *****************
 
+const filePathForPhotos = 'public/img/users';
 // ⬇️⬇️⬇️ Uncomment if you NO need image processing
 // multerStorage and middleware resizeImage should be commented
 // const multerStorage = multer.diskStorage({
@@ -39,26 +40,29 @@ const multerFilter = (req, file, nextCallback) => {
   }
 };
 
-const resizeImage = (req, res, next) => {
+const resizeImage = H.catchAsync(async (req, res, next) => {
   if (!req.file) {
     return next();
   }
 
   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
 
-  sharp(req.file.buffer)
+  await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
     .toFile(`${filePathForPhotos}/${req.file.filename}`);
 
   next();
-};
+});
 
 const upload = multer({
   storage: multerStorage,
   fileFilter: multerFilter
 });
+
+const uploadUserPhoto = upload.single('photo');
+// ********************* UPLOAD IMAGE *****************
 
 const filterBody = (body, ...allowedProperties) => {
   const newBody = {};
@@ -131,8 +135,6 @@ const getMe = (req, res, next) => {
   req.params.id = req.user.id;
   next();
 };
-
-const uploadUserPhoto = upload.single('photo');
 
 module.exports = {
   onGetAll: handlerFactory.getAll(User),
