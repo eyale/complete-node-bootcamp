@@ -3,6 +3,7 @@
  * CONTROLLER Users
  */
 const multer = require('multer');
+const sharp = require('sharp');
 
 const K = require(`${__dirname}/../misc/constants`);
 const H = require(`${__dirname}/../misc/helpers`);
@@ -13,17 +14,20 @@ const User = require('../models/user');
 
 const filePathForPhotos = 'public/img/users';
 
-const multerStorage = multer.diskStorage({
-  destination: (req, file, nextCallback) => {
-    nextCallback(null, filePathForPhotos);
-  },
-  filename: (req, file, nextCallback) => {
-    //user-${iserId}-${timestamp}.jpeg
-    const ext = file.mimetype.split('/')[1];
+// ⬇️⬇️⬇️ Uncomment if you NO need image processing
+// multerStoragemiddleware resizeImage should be commented
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, nextCallback) => {
+//     nextCallback(null, filePathForPhotos);
+//   },
+//   filename: (req, file, nextCallback) => {
+//     //user-${iserId}-${timestamp}.jpeg
+//     const ext = file.mimetype.split('/')[1];
 
-    nextCallback(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-  }
-});
+//     nextCallback(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+//   }
+// });
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, nextCallback) => {
   // for all kinds of files
@@ -33,6 +37,22 @@ const multerFilter = (req, file, nextCallback) => {
   } else {
     nextCallback(new AppError('Only image can be uploaded', 400), false);
   }
+};
+
+const resizeImage = (req, res, next) => {
+  if (!req.file) {
+    return next();
+  }
+
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`${filePathForPhotos}/${req.file.filename}`);
+
+  next();
 };
 
 const upload = multer({
@@ -53,8 +73,8 @@ const filterBody = (body, ...allowedProperties) => {
 };
 
 const onUpdateUserInfo = H.catchAsync(async (req, res, next) => {
-  console.log('🤖  req', req.file);
-  console.log('🤖  req', req.body);
+  console.log('📁 ', req.file);
+  console.log('👽 ', req.body);
 
   // 1 - throw error if user POSTs password
   const { password, confirmPassword, ...rest } = req.body;
@@ -124,5 +144,6 @@ module.exports = {
   onDeactivateUser: onDeactivateUserAccount,
   onAddNew: onAddNewUser,
   getMe,
+  resizeImage,
   uploadUserPhoto
 };
