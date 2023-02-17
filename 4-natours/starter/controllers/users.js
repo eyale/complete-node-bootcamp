@@ -15,7 +15,7 @@ const User = require('../models/user');
 const filePathForPhotos = 'public/img/users';
 
 // ⬇️⬇️⬇️ Uncomment if you NO need image processing
-// multerStoragemiddleware resizeImage should be commented
+// multerStorage and middleware resizeImage should be commented
 // const multerStorage = multer.diskStorage({
 //   destination: (req, file, nextCallback) => {
 //     nextCallback(null, filePathForPhotos);

@@ -12,7 +12,12 @@ export const updateUserInfo = async (data, type) => {
 
     const res = await axios({ method: 'PATCH', url, data });
     console.log('🪬', res);
+
     showAlert('success', `🎉 ${type.toUpperCase()} has been updated.`);
+
+    window.setTimeout(() => {
+      window.location.reload();
+    }, 1000);
   } catch (error) {
     console.log('🤖  error', error);
     showAlert('error', error.response.data.message);
