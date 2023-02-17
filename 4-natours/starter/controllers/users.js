@@ -68,6 +68,9 @@ const onUpdateUserInfo = H.catchAsync(async (req, res, next) => {
   }
   // 3 - filter request body properties
   const updateFieldsObject = filterBody(rest, 'name', 'email');
+  if (req.file) {
+    updateFieldsObject.photo = req.file.filename;
+  }
 
   // 2 - update document
   const updatedUser = await User.findByIdAndUpdate(
