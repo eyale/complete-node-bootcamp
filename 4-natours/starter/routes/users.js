@@ -23,7 +23,7 @@ router.get('/me', userC.getMe, userC.onGet);
 router.post('/forgotPassword', authC.forgotPassword);
 router.patch('/resetPassword/:token', authC.resetPassword);
 router.patch('/updatePassword', authC.updatePassword);
-router.patch('/updateUserInfo', userC.onUpdateUserInfo);
+router.patch('/updateUserInfo', userC.uploadUserPhoto, userC.onUpdateUserInfo);
 router.delete('/deactivateUser', userC.onDeactivateUser);
 
 // as far as authC.restrictTo is middleware function

@@ -257,12 +257,6 @@ const resetPassword = H.catchAsync(async (req, res, next) => {
 
 const updatePassword = H.catchAsync(async (req, res, next) => {
   const { password, passwordNew, confirmNewPassword } = req.body;
-  console.log(
-    '🤖  password, passwordNew, confirmNewPassword',
-    password,
-    passwordNew,
-    confirmNewPassword
-  );
 
   // 3 - is user exist
   const user = await User.findById(req.user.id).select('+password');

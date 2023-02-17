@@ -53,8 +53,6 @@ exports.me = H.catchAsync(async (req, res) => {
 exports.updateUserData = H.catchAsync(async (req, res, next) => {
   const { id } = req.user;
   const { name, email } = req.body;
-  console.log('🤷🏻‍♂️🤷🏻‍♂️🤷🏻‍♂️🤷🏻‍♂️🤷🏻‍♂️🤷🏻‍♂️🤷🏻‍♂️🤷🏻‍♂️🤷🏻‍♂️\n\n\n');
-  console.log(req.body, req.user);
 
   const user = await User.findByIdAndUpdate(
     id,

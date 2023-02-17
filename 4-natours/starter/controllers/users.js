@@ -2,6 +2,7 @@
  *
  * CONTROLLER Users
  */
+const multer = require('multer');
 
 const K = require(`${__dirname}/../misc/constants`);
 const H = require(`${__dirname}/../misc/helpers`);
@@ -9,6 +10,35 @@ const AppError = require(`${__dirname}/../misc/appError`);
 const handlerFactory = require(`${__dirname}/handlerFactory`);
 
 const User = require('../models/user');
+
+const filePathForPhotos = 'public/img/users';
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, nextCallback) => {
+    nextCallback(null, filePathForPhotos);
+  },
+  filename: (req, file, nextCallback) => {
+    //user-${iserId}-${timestamp}.jpeg
+    const ext = file.mimetype.split('/')[1];
+
+    nextCallback(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+  }
+});
+
+const multerFilter = (req, file, nextCallback) => {
+  // for all kinds of files
+  // but we need photos now
+  if (file.mimetype.startsWith('image')) {
+    nextCallback(null, true);
+  } else {
+    nextCallback(new AppError('Only image can be uploaded', 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter
+});
 
 const filterBody = (body, ...allowedProperties) => {
   const newBody = {};
@@ -23,6 +53,9 @@ const filterBody = (body, ...allowedProperties) => {
 };
 
 const onUpdateUserInfo = H.catchAsync(async (req, res, next) => {
+  console.log('🤖  req', req.file);
+  console.log('🤖  req', req.body);
+
   // 1 - throw error if user POSTs password
   const { password, confirmPassword, ...rest } = req.body;
   if (password || confirmPassword) {
@@ -76,6 +109,8 @@ const getMe = (req, res, next) => {
   next();
 };
 
+const uploadUserPhoto = upload.single('photo');
+
 module.exports = {
   onGetAll: handlerFactory.getAll(User),
   onGet: handlerFactory.getOne(User),
@@ -85,5 +120,6 @@ module.exports = {
   onUpdateUserInfo: onUpdateUserInfo,
   onDeactivateUser: onDeactivateUserAccount,
   onAddNew: onAddNewUser,
-  getMe
+  getMe,
+  uploadUserPhoto
 };
