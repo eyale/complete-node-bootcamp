@@ -10,7 +10,8 @@ const crypto = require('crypto');
 const K = require(`${__dirname}/../misc/constants`);
 const H = require(`${__dirname}/../misc/helpers`);
 const AppError = require(`${__dirname}/../misc/appError.js`);
-const { sendEmail } = require(`${__dirname}/../misc/email.js`);
+// const { sendEmail } = require(`${__dirname}/../misc/email.js`);
+const Email = require(`${__dirname}/../misc/email.js`);
 const User = require('../models/user');
 
 const getUsersToken = id =>
@@ -58,6 +59,15 @@ const signup = H.catchAsync(async (req, res, next) => {
     passwordChangeAt,
     role
   });
+
+  const url =
+    process.env.NODE_ENV === 'production'
+      ? `${req.protocol}://${req.get('host')}/me`
+      : `${req.protocol}://localhost:8000/me`;
+
+  console.log('🪬 - url', url);
+
+  await new Email(newUser, url).sendWelcome();
 
   createAndSendToken(newUser, 201, res);
 });
@@ -195,7 +205,7 @@ const forgotPassword = H.catchAsync(async (req, res, next) => {
   };
 
   try {
-    await sendEmail(info);
+    // await sendEmail(info);
 
     res.status(200).json({
       status: K.STATUS.success,
