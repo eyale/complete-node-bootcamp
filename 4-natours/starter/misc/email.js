@@ -13,7 +13,13 @@ class Email {
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      return 1;
+      return nodemailer.createTransport({
+        service: 'SendGrid',
+        auth: {
+          user: process.env.SENDGRID_API_NAME,
+          pass: process.env.SENDGRID_API_KEY
+        }
+      });
     }
 
     return nodemailer.createTransport({
@@ -26,7 +32,7 @@ class Email {
     });
   }
 
-  async send(template, subject) {
+  async send(templateName, subject) {
     const htmlProps = {
       firstName: this.firstName,
       url: this.url,
@@ -34,20 +40,22 @@ class Email {
     };
 
     const html = pug.renderFile(
-      `${__dirname}/../views/email/${template}.pug`,
+      `${__dirname}/../views/email/${templateName}.pug`,
       htmlProps
     );
 
     // define email template
     const info = {
-      from: this.from,
+      from:
+        process.env.NODE_ENV === 'production'
+          ? process.env.SENDGRID_EMAIL_FROM
+          : this.from,
       to: this.to,
       text: htmlToText(html), // plain text body
       subject,
       html
       // html: message // plain text body
     };
-
     // create transport and send it
     await this.newTransport().sendMail(info);
   }
@@ -55,35 +63,13 @@ class Email {
   async sendWelcome() {
     await this.send('welcome', 'Welcome to the Natours family');
   }
+
+  async sendForgotPassword() {
+    await this.send(
+      'forgotPassword',
+      'Your password reset token (valid for 10 min)'
+    );
+  }
 }
-
-// const sendEmail = async ({ email, subject, message }) => {
-//   // 1 - create transporter
-//   const transporter = await nodemailer.createTransport({
-//     host: process.env.EMAIL_HOST,
-//     port: process.env.EMAIL_PORT,
-//     auth: {
-//       user: process.env.EMAIL_USERNAME,
-//       pass: process.env.EMAIL_PASSWORD
-//     }
-//   });
-//   // 2 - define options
-//   const info = {
-//     from: '"Honcharov Anton 🥷🏼" <hello@eyal.com>', // sender address
-//     to: email, // list of receivers
-//     subject: subject, // Subject line
-//     text: message // plain text body
-//   };
-//   // 1 - send email
-//   let res;
-
-//   try {
-//     res = await transporter.sendMail(info);
-//   } catch (error) {
-//     console.error('🪬  error', error);
-//   }
-
-//   return res;
-// };
 
 module.exports = Email;

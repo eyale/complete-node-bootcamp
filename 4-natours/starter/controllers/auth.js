@@ -60,11 +60,10 @@ const signup = H.catchAsync(async (req, res, next) => {
     role
   });
 
-  const url =
-    process.env.NODE_ENV === 'production'
-      ? `${req.protocol}://${req.get('host')}/me`
-      : `${req.protocol}://localhost:8000/me`;
+  const host =
+    process.env.NODE_ENV === 'production' ? req.get('host') : 'localhost:8000';
 
+  const url = `${req.protocol}://${host}/me`;
   console.log('🪬 - url', url);
 
   await new Email(newUser, url).sendWelcome();
@@ -191,21 +190,15 @@ const forgotPassword = H.catchAsync(async (req, res, next) => {
   user.save({ validateBeforeSave: false });
 
   // 3 - send it to users email
-  const resetURL = `${req.protocol}://${req.get(
-    'host'
-  )}/api/v1/users/resetPassword/${resetToken}`;
-
-  const message = `Forgot password? Submit reset password with new password. Confirm to: ${resetURL}.\nIgnore email if it was not you 🤷🏻‍♂️`;
-  const subject = 'Your password reset token valid only for 10 min';
-
-  const info = {
-    email: user.email,
-    subject,
-    message
-  };
-
   try {
-    // await sendEmail(info);
+    const host =
+      process.env.NODE_ENV === 'production'
+        ? req.get('host')
+        : 'localhost:8000';
+    const resetURL = `${
+      req.protocol
+    }://${host}/api/v1/users/resetPassword/${resetToken}`;
+    await new Email(user, resetURL).sendForgotPassword();
 
     res.status(200).json({
       status: K.STATUS.success,
@@ -242,7 +235,7 @@ const resetPassword = H.catchAsync(async (req, res, next) => {
     return next(new AppError(`User not found: invalid or expired token`, 404));
   }
 
-  if (req.body.password && req.body.confirmPassword) {
+  if (!req.body.password || !req.body.confirmPassword) {
     return next(
       new AppError(
         `Invalid data. Password: ${req.body.password}, confirmPassword: ${
