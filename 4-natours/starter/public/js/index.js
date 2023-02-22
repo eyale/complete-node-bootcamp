@@ -3,6 +3,7 @@ import '@babel/polyfill';
 import { login, logout } from './login';
 import { updateUserInfo } from './updateUserInfo';
 import mapBoxInit from './mapbox';
+import { bookTour } from './stripe';
 
 console.log('📦 parcel is watching...\n');
 
@@ -72,5 +73,18 @@ window.addEventListener('load', () => {
       document.getElementById('map').dataset.locations
     );
     mapBoxInit(locations);
+  }
+
+  if (document.getElementById('book-tour')) {
+    document.getElementById('book-tour').addEventListener('click', async e => {
+      e.preventDefault();
+      const { skey } = e.target.dataset;
+      const { tourId } = e.target.dataset;
+
+      e.target.textContent = 'Loading 🔄';
+      const resBooking = await bookTour(tourId, skey);
+      console.log('🪬 - resBooking', resBooking);
+    });
+    //
   }
 });

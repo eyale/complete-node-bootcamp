@@ -38,6 +38,7 @@ const ROUTES = {
   v1: {
     tours: `/api/${API_VERSION.v1}/tours`,
     reviews: `/api/${API_VERSION.v1}/reviews`,
+    booking: `/api/${API_VERSION.v1}/booking`,
     users: `/api/${API_VERSION.v1}/users`
   }
 };
@@ -53,6 +54,8 @@ const allowedPropertiesToDuplicate = [
   'difficulty',
   'price'
 ];
+const getHostFrom = req =>
+  process.env.NODE_ENV === 'production' ? req.get('host') : 'localhost:8000';
 
 module.exports = {
   APP_NAME: 'Natours',
@@ -64,5 +67,6 @@ module.exports = {
   API_METHOD,
   ERROR_TYPE,
   ROLES,
-  allowedPropertiesToDuplicate
+  allowedPropertiesToDuplicate,
+  getHostFrom
 };

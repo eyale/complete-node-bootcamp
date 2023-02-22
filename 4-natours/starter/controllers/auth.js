@@ -145,6 +145,7 @@ const protect = H.catchAsync(async (req, res, next) => {
 // only for rendered pages
 const handleLoggedUser = H.catchAsync(async (req, res, next) => {
   res.locals.MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
+  res.locals.skey = process.env.STRIPE_API_KEY;
   if (req.cookies.jwt) {
     try {
       const dataFromDecodedToken = await promisify(jwt.verify)(
@@ -191,13 +192,9 @@ const forgotPassword = H.catchAsync(async (req, res, next) => {
 
   // 3 - send it to users email
   try {
-    const host =
-      process.env.NODE_ENV === 'production'
-        ? req.get('host')
-        : 'localhost:8000';
-    const resetURL = `${
-      req.protocol
-    }://${host}/api/v1/users/resetPassword/${resetToken}`;
+    const resetURL = `${req.protocol}://${K.getHostFrom(
+      req
+    )}/api/v1/users/resetPassword/${resetToken}`;
     await new Email(user, resetURL).sendForgotPassword();
 
     res.status(200).json({

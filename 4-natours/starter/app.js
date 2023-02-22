@@ -12,6 +12,7 @@ const toursRouter = require(`${__dirname}/routes/tours`);
 const reviewsRouter = require(`${__dirname}/routes/reviews`);
 const usersRouter = require(`${__dirname}/routes/users`);
 const viewRouter = require(`${__dirname}/routes/viewRoutes`);
+const bookingRouter = require(`${__dirname}/routes/booking`);
 
 const app = express();
 
@@ -57,6 +58,10 @@ app.use(K.ROUTES.v1.reviews, reviewsRouter);
  * USERS
  */
 app.use(K.ROUTES.v1.users, usersRouter);
+/**
+ * BOOKING
+ */
+app.use(K.ROUTES.v1.booking, bookingRouter);
 /**
  * ALL OTHERS REQUESTS
  */
