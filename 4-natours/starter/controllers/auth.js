@@ -64,7 +64,6 @@ const signup = H.catchAsync(async (req, res, next) => {
     process.env.NODE_ENV === 'production' ? req.get('host') : 'localhost:8000';
 
   const url = `${req.protocol}://${host}/me`;
-  console.log('🪬 - url', url);
 
   await new Email(newUser, url).sendWelcome();
 

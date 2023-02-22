@@ -5,7 +5,7 @@ import { updateUserInfo } from './updateUserInfo';
 import mapBoxInit from './mapbox';
 import { bookTour } from './stripe';
 
-console.log('📦 parcel is watching...\n');
+// console.log('📦 parcel is watching...\n');
 
 window.addEventListener('load', () => {
   // LOGIN
@@ -26,7 +26,6 @@ window.addEventListener('load', () => {
       form.append('name', document.getElementById('name').value);
       form.append('email', document.getElementById('email').value);
       form.append('photo', document.getElementById('photo').files[0]);
-      console.log('🤖  form', form.forEach(console.log));
 
       updateUserInfo(form, 'data');
     });
@@ -37,13 +36,10 @@ window.addEventListener('load', () => {
       .querySelector('.form-user-password')
       .addEventListener('submit', async e => {
         e.preventDefault();
-        // "password": "testNewPass",
-        // "passwordNew": "123456789",
-        // "confirmNewPassword": "123456789"
+        
         document.querySelector('.btn--save-password').textContent =
           'Updating ...';
         const password = document.getElementById('password-current').value;
-        console.log('🤖  password', password);
         const passwordNew = document.getElementById('password').value;
         const confirmNewPassword = document.getElementById('password-confirm')
           .value;
@@ -83,7 +79,6 @@ window.addEventListener('load', () => {
 
       e.target.textContent = 'Loading 🔄';
       const resBooking = await bookTour(tourId, skey);
-      console.log('🪬 - resBooking', resBooking);
     });
     //
   }

@@ -192,10 +192,10 @@ tourSchema.pre(/^find/, function(next) {
   next();
 });
 
-tourSchema.post(/^find/, function(docs, next) {
-  console.log(`Query exec time: ${Date.now() - this.start}mls`);
-  next();
-});
+// tourSchema.post(/^find/, function(docs, next) {
+//   console.log(`Query exec time: ${Date.now() - this.start}mls`);
+//   next();
+// });
 
 // AGGREGATION MIDDLEWARE/HOOK
 tourSchema.pre('aggregate', function(next) {

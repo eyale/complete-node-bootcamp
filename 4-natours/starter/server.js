@@ -29,8 +29,8 @@ const connectOptions = {
 mongoose.connect(DB_URI, connectOptions).then(helpers.onMongooseConnect);
 
 const server = app.listen(port, () => {
-  console.log('\n');
   console.log(
+    '\n',
     '\x1b[43m%s\x1b[0m',
     `✅ 📲 ${K.APP_NAME} is running on port: ${port}`
   );

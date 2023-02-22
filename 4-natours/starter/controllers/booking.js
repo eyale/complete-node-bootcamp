@@ -20,13 +20,11 @@ const getCheckoutSession = H.catchAsync(async (req, res, next) => {
   }
 
   const tour = await Tour.findById(req.params.tourId);
-  console.log('🪬 - tour', tour);
 
   const url = `${req.protocol}://${K.getHostFrom(req)}`;
   const successUrl = `${url}/?tour=${tour.id}&user=${req.user.id}&price=${
     tour.price
   }`;
-  console.log('🪬 - successUrl', successUrl);
 
   const options = {
     //session info
@@ -54,7 +52,6 @@ const getCheckoutSession = H.catchAsync(async (req, res, next) => {
   };
 
   const session = await stripe.checkout.sessions.create(options);
-  console.log('🪬 - Strapi session\n', session);
 
   res.status(200).json({
     status: K.STATUS.success,
@@ -69,12 +66,11 @@ const createBookingCheckout = H.catchAsync(async (req, res, next) => {
     return next();
   }
 
-  const bookingItem = await Booking.create({
+  await Booking.create({
     tour,
     user,
     price
   });
-  console.log('🕎 bookingItem', bookingItem);
 
   res.redirect(req.originalUrl.split('?')[0]);
 });

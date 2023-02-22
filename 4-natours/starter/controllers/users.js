@@ -77,9 +77,6 @@ const filterBody = (body, ...allowedProperties) => {
 };
 
 const onUpdateUserInfo = H.catchAsync(async (req, res, next) => {
-  console.log('📁 ', req.file);
-  console.log('👽 ', req.body);
-
   // 1 - throw error if user POSTs password
   const { password, confirmPassword, ...rest } = req.body;
   if (password || confirmPassword) {

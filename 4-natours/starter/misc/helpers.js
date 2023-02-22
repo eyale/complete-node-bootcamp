@@ -4,6 +4,7 @@ const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const onMongooseConnect = _ => {
   console.log('🔌 MONGOOSE CONNECTED');
@@ -56,8 +57,8 @@ const applyMiddlewares = app => {
   // this will define static files from
   // folder `./public`
   app.use(express.static(path.join(__dirname, '../public')));
-  console.log('🤖  path.join()', path.join(__dirname, '../public'));
   app.use(addRequestedAtToParams);
+  app.use(compression());
 };
 
 const getDays = days => new Date(Date.now() + days * 24 * 60 * 60 * 1000);

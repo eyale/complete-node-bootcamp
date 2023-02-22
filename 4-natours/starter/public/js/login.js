@@ -6,10 +6,10 @@ export const login = async (email, password) => {
   try {
     const res = await axios({
       method: 'POST',
-      url: 'http://localhost:8000/api/v1/users/login',
+      url: '/api/v1/users/login',
       data: { email, password }
     });
-    console.log('🪬', res);
+
     showAlert('success', `🎉 ${email} logged in.`);
     window.setTimeout(() => {
       window.location.assign('/');
@@ -24,9 +24,9 @@ export const logout = async () => {
   try {
     const res = await axios({
       method: 'GET',
-      url: 'http://localhost:8000/api/v1/users/logout'
+      url: '/api/v1/users/logout'
     });
-    console.log('🪬', res);
+
     if (res.data.status === 'success') {
       window.location.reload(true);
       window.setTimeout(() => {

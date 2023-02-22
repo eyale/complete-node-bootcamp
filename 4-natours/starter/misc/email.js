@@ -4,7 +4,6 @@ const { htmlToText } = require('html-to-text');
 
 class Email {
   constructor(user, url) {
-    console.log('🪬 - user, url', user, url);
     this.to = user.email;
     this.firstName = user.email.split(' ')[0];
     this.url = url;

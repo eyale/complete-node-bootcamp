@@ -74,7 +74,6 @@ exports.getMyTours = H.catchAsync(async (req, res, next) => {
   // find tours with id's
   const tourIDs = booking.map(item => item.tour);
   const tours = await Tour.find({ _id: { $in: tourIDs } });
-  console.log('🪬 getMyTours - tours', tours);
 
   res.status(200).render('overview', {
     title: 'My tours',

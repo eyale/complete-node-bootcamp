@@ -5,14 +5,12 @@ import showAlert from './alerts';
 
 // eslint-disable-next-line import/prefer-default-export
 export const bookTour = async (tourId, stripeApiKey) => {
-  console.log('🪬 - stripeApiKey', stripeApiKey);
   // get checkout session from API
   try {
     const session = await axios({
       method: 'GET',
-      url: `http://localhost:8000/api/v1/booking/checkout-session/${tourId}`
+      url: `/api/v1/booking/checkout-session/${tourId}`
     });
-    console.log('🪬', session);
 
     const stripe = Stripe(stripeApiKey);
     await stripe.redirectToCheckout({
