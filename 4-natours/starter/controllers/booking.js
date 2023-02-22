@@ -5,6 +5,7 @@
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+const handlerFactory = require(`${__dirname}/handlerFactory`);
 const K = require(`${__dirname}/../misc/constants`);
 const H = require(`${__dirname}/../misc/helpers`);
 // const handlerFactory = require(`${__dirname}/handlerFactory`);
@@ -80,5 +81,10 @@ const createBookingCheckout = H.catchAsync(async (req, res, next) => {
 
 module.exports = {
   getCheckoutSession,
-  createBookingCheckout
+  createBookingCheckout,
+  onGetAll: handlerFactory.getAll(Booking),
+  onGet: handlerFactory.getOne(Booking),
+  onAddNew: handlerFactory.createOne(Booking),
+  onEdit: handlerFactory.updateOne(Booking),
+  onDelete: handlerFactory.deleteOne(Booking)
 };

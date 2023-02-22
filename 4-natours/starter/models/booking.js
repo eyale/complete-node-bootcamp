@@ -33,7 +33,8 @@ const bookingSchema = new mongoose.Schema({
 
 // 1.1 - populate Schema
 bookingSchema.pre(/^find/, function(next) {
-  this.populate('user').populate({ name: 'tour', select: 'name' });
+  this.populate('user').populate({ path: 'tour', select: 'name' });
+  next();
 });
 // 2 - create Model
 const Booking = mongoose.model('Booking', bookingSchema);

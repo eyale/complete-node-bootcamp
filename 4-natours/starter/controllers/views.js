@@ -5,6 +5,7 @@
 
 const Tour = require('../models/tour');
 const User = require('../models/user');
+const Booking = require('../models/booking');
 const H = require('../misc/helpers');
 
 const AppError = require(`${__dirname}/../misc/appError`);
@@ -65,4 +66,18 @@ exports.updateUserData = H.catchAsync(async (req, res, next) => {
     user
   });
   next();
+});
+
+exports.getMyTours = H.catchAsync(async (req, res, next) => {
+  // find all bookings
+  const booking = await Booking.find({ user: req.user.id });
+  // find tours with id's
+  const tourIDs = booking.map(item => item.tour);
+  const tours = await Tour.find({ _id: { $in: tourIDs } });
+  console.log('🪬 getMyTours - tours', tours);
+
+  res.status(200).render('overview', {
+    title: 'My tours',
+    data: { tours }
+  });
 });

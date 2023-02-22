@@ -15,6 +15,7 @@ router.get(
 router.get('/tour/:slug', authC.handleLoggedUser, viewC.getTour);
 router.get('/login', authC.handleLoggedUser, viewC.login);
 router.get('/me', authC.protect, viewC.me);
+router.get('/my-tours', authC.protect, viewC.getMyTours);
 
 router.post('/submit-user-data', authC.protect, viewC.updateUserData);
 
