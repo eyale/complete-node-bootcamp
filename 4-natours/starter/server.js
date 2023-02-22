@@ -39,3 +39,10 @@ const server = app.listen(port, () => {
 process.on('unhandledRejection', err => {
   errorController.unhandledRejection(server, err);
 });
+
+process.on('SIGTERM', () => {
+  console.log('🫣 SIGTERM RECEIVED. Shutting down gracefully...');
+  server.close(() => {
+    console.log('🙅🏼‍♂️ process terminated');
+  });
+});

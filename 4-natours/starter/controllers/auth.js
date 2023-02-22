@@ -19,12 +19,12 @@ const getUsersToken = id =>
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 
-const createAndSendToken = (user, statusCode, res) => {
+const createAndSendToken = (user, statusCode, req, res) => {
   const token = getUsersToken(user._id);
 
   const cookieOptions = {
     expires: H.getDays(process.env.JWT_EXPIRES_IN_COOKIE),
-    secure: process.env.NODE_ENV === 'production',
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
     httpOnly: true
   };
 
@@ -67,7 +67,7 @@ const signup = H.catchAsync(async (req, res, next) => {
 
   await new Email(newUser, url).sendWelcome();
 
-  createAndSendToken(newUser, 201, res);
+  createAndSendToken(newUser, 201, req, res);
 });
 
 const logout = H.catchAsync(async (req, res, next) => {
@@ -98,7 +98,7 @@ const login = H.catchAsync(async (req, res, next) => {
   }
 
   // 3 - send token
-  createAndSendToken(user, 200, res);
+  createAndSendToken(user, 200, req, res);
 });
 
 const protect = H.catchAsync(async (req, res, next) => {
@@ -251,7 +251,7 @@ const resetPassword = H.catchAsync(async (req, res, next) => {
 
   // 3 - user.changePasswordAt = new Date()
   // 4 - send JWT token in response
-  createAndSendToken(user, 200, res);
+  createAndSendToken(user, 200, req, res);
 });
 
 const updatePassword = H.catchAsync(async (req, res, next) => {
@@ -274,7 +274,7 @@ const updatePassword = H.catchAsync(async (req, res, next) => {
   await user.save();
 
   // 4 - Log in user, send JWT
-  createAndSendToken(user, 200, res);
+  createAndSendToken(user, 200, req, res);
 });
 
 module.exports = {

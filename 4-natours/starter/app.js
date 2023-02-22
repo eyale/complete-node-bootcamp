@@ -15,6 +15,7 @@ const viewRouter = require(`${__dirname}/routes/viewRoutes`);
 const bookingRouter = require(`${__dirname}/routes/booking`);
 
 const app = express();
+app.enable('trust proxy');
 
 // middleware
 // Data sanitization against NoSQL query injection
