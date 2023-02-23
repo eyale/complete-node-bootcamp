@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors');
 
 const onMongooseConnect = _ => {
   console.log('🔌 MONGOOSE CONNECTED');
@@ -59,6 +60,15 @@ const applyMiddlewares = app => {
   app.use(express.static(path.join(__dirname, '../public')));
   app.use(addRequestedAtToParams);
   app.use(compression());
+  // Access-Control-Allow-Origin: "*"
+  // app.use(
+  //   cors({
+  //     origin: 'https://www.natours.com'
+  //   })
+  // );
+  app.use(cors());
+  // app.options('/api/v1/tours/:id', cors());
+  app.options('*', cors());
 };
 
 const getDays = days => new Date(Date.now() + days * 24 * 60 * 60 * 1000);
